@@ -78,7 +78,8 @@ const Navbar: React.FC = () => {
             </motion.svg>
           </motion.button>
 
-          <div className="flex items-center gap-4">
+          {/* E-posta butonu - sadece desktop'ta görünür */}
+          <div className="hidden md:flex items-center gap-4">
             <a
               href="https://mail.google.com/a/celiklashing.com"
               target="_blank"
@@ -99,7 +100,7 @@ const Navbar: React.FC = () => {
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" 
                 />
               </svg>
-              Kurumsal E-posta Girişi
+              Kurumsal E-posta
             </a>
           </div>
         </div>
