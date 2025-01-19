@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ref, listAll, getDownloadURL } from 'firebase/storage';
-import { storage } from '../config/firebase';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { storage, db } from '../config/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
@@ -8,14 +9,23 @@ import { FiMaximize2, FiX } from 'react-icons/fi';
 // @ts-ignore
 import Masonry from 'react-masonry-css';
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface GalleryImage {
   url: string;
   name: string;
   category: string;
+  timestamp: number;
 }
 
 const Gallery: React.FC = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,28 +38,58 @@ const Gallery: React.FC = () => {
   };
 
   useEffect(() => {
-    loadImages();
+    loadCategories();
   }, []);
+
+  useEffect(() => {
+    loadImages();
+  }, [selectedCategory]);
+
+  const loadCategories = async () => {
+    try {
+      const categoriesCollection = collection(db, 'categories');
+      const categoriesSnapshot = await getDocs(categoriesCollection);
+      const categoriesList = categoriesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Category[];
+      setCategories(categoriesList);
+    } catch (error) {
+      console.error('Kategoriler yüklenirken hata:', error);
+    }
+  };
 
   const loadImages = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Loading images from Firebase Storage...');
       
       const storageRef = ref(storage, 'gallery');
       const result = await listAll(storageRef);
       
-      console.log(`Found ${result.items.length} images`);
+      if (result.items.length === 0) {
+        setImages([]);
+        return;
+      }
+
+      const imagesCollection = collection(db, 'images');
+      const q = selectedCategory === 'all' 
+        ? query(imagesCollection, orderBy('timestamp', 'desc'))
+        : query(imagesCollection, where('category', '==', selectedCategory), orderBy('timestamp', 'desc'));
       
+      const imagesSnapshot = await getDocs(q);
+      const imagesData = imagesSnapshot.docs.map(doc => doc.data());
+
       const imagePromises = result.items.map(async (item) => {
         try {
           const url = await getDownloadURL(item);
-          return {
+          const imageData = imagesData.find(img => img.ref === `gallery/${item.name}`);
+          return imageData ? {
             url,
             name: item.name,
-            category: 'all'
-          };
+            category: imageData.category,
+            timestamp: imageData.timestamp
+          } : null;
         } catch (error) {
           console.error(`Error getting download URL for ${item.name}:`, error);
           return null;
@@ -59,7 +99,6 @@ const Gallery: React.FC = () => {
       const imageList = (await Promise.all(imagePromises))
         .filter((img): img is GalleryImage => img !== null);
       
-      console.log(`Successfully loaded ${imageList.length} images`);
       setImages(imageList);
     } catch (error) {
       console.error('Error loading images:', error);
@@ -95,6 +134,38 @@ const Gallery: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        {/* Category Filter */}
+        <div className="mb-8 flex flex-wrap gap-2">
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => setSelectedCategory('all')}
+            className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+              selectedCategory === 'all'
+                ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            Tümü
+          </motion.button>
+          {categories.map((category, index) => (
+            <motion.button
+              key={category.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                selectedCategory === category.id
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              {category.name}
+            </motion.button>
+          ))}
+        </div>
+
         {/* Error State */}
         {error && (
           <div className="text-center text-red-600 mb-8 p-4 bg-red-100 rounded-lg">
@@ -141,8 +212,12 @@ const Gallery: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <p className="text-white text-sm font-medium truncate">{image.name}</p>
-                      <FiMaximize2 className="absolute bottom-4 right-4 text-white w-6 h-6" />
+                      <div className="flex items-center justify-between">
+                        <span className="text-white text-sm bg-primary/80 px-3 py-1 rounded-full">
+                          {categories.find(c => c.id === image.category)?.name || 'Diğer'}
+                        </span>
+                        <FiMaximize2 className="text-white w-6 h-6" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -154,7 +229,7 @@ const Gallery: React.FC = () => {
         {/* No Images State */}
         {!loading && images.length === 0 && !error && (
           <div className="text-center text-gray-600 py-12">
-            Henüz görüntü yüklenmemiş.
+            Bu kategoride henüz görüntü yüklenmemiş.
           </div>
         )}
 
@@ -196,4 +271,4 @@ const Gallery: React.FC = () => {
   );
 };
 
-export default Gallery; 
+export default Gallery;

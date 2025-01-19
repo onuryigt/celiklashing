@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useForm, FieldError } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
+import emailjs from '@emailjs/browser'
 
 interface FormData {
   name: string
@@ -11,6 +12,12 @@ interface FormData {
   message: string
 }
 
+// .env dosyasından değerleri alın
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+
+// TypeScript için tip tanımlaması
 declare global {
   interface Window {
     emailjs: any;
@@ -23,34 +30,47 @@ const Contact: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   
   useEffect(() => {
-    window.emailjs.init("FIzAbHjKzUVsnqKvc")
+    if (PUBLIC_KEY && window.emailjs) {
+      window.emailjs.init(PUBLIC_KEY);
+    } else {
+      console.error('EmailJS Public Key bulunamadı!');
+    }
   }, [])
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>()
 
   const onSubmit = async (formData: FormData) => {
-    setIsSubmitting(true)
-    setError(null)
+    setIsSubmitting(true);
+    setError(null);
+    
+    if (!SERVICE_ID || !TEMPLATE_ID) {
+      setError('Email servisi yapılandırması eksik!');
+      setIsSubmitting(false);
+      return;
+    }
     
     try {
       const templateParams = {
-        from_name: formData.name,
-        reply_to: 'operasyon@celiklashing.com',
-        phone: formData.phone,
+        user_name: formData.name,
+        user_email: formData.email,
+        user_phone: formData.phone,
         subject: formData.subject,
-        message: formData.message,
-        customer_email: formData.email
+        message: formData.message
       }
 
-      await window.emailjs.send(
-        'service_ntbeioc',
-        'template_9epb3yh',
+      const response = await window.emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
         templateParams
       )
 
-      setIsSuccess(true)
-      reset()
-      setTimeout(() => setIsSuccess(false), 5000)
+      if (response.status === 200) {
+        setIsSuccess(true)
+        reset()
+        setTimeout(() => setIsSuccess(false), 5000)
+      } else {
+        throw new Error('E-posta gönderilemedi')
+      }
     } catch (err) {
       console.error('Email gönderirken hata:', err)
       setError('Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
@@ -331,7 +351,7 @@ const Contact: React.FC = () => {
 
           <div className="relative h-[400px] rounded-xl overflow-hidden shadow-lg">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3015.847145973634!2d29.23暂时替换为实际地址!3d40.暂时替换为实际地址!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cad0暂时替换为实际地址%3A0x暂时替换为实际地址!2sStarport%20Residence!5e0!3m2!1str!2str!4v1暂时替换为实际时间"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3015.847145973634!2d29.23324187668457!3d40.87654997136689!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cad0f41e9c3925%3A0x42c2e8c8c2140c13!2sStarport%20Residence!5e0!3m2!1str!2str!4v1710775044407!5m2!1str!2str"
               width="100%"
               height="100%"
               style={{ border: 0 }}
