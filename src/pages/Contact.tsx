@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useForm, FieldError } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
-import emailjs from '@emailjs/browser'
 
 interface FormData {
   name: string
@@ -30,12 +29,19 @@ const Contact: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   
   useEffect(() => {
-    if (PUBLIC_KEY && window.emailjs) {
-      window.emailjs.init(PUBLIC_KEY);
-    } else {
-      console.error('EmailJS Public Key bulunamadı!');
-    }
-  }, [])
+    const loadEmailJS = async () => {
+      try {
+        if (PUBLIC_KEY) {
+          await window.emailjs.init(PUBLIC_KEY);
+          console.log('EmailJS initialized successfully');
+        }
+      } catch (error) {
+        console.error('EmailJS initialization error:', error);
+      }
+    };
+
+    loadEmailJS();
+  }, []);
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>()
 
@@ -51,33 +57,34 @@ const Contact: React.FC = () => {
     
     try {
       const templateParams = {
-        user_name: formData.name,
-        user_email: formData.email,
-        user_phone: formData.phone,
+        from_name: formData.name,
+        reply_to: formData.email,
+        phone: formData.phone,
         subject: formData.subject,
         message: formData.message
-      }
+      };
 
-      const response = await window.emailjs.send(
+      const response = await window.emailjs.sendForm(
         SERVICE_ID,
         TEMPLATE_ID,
-        templateParams
-      )
+        templateParams,
+        PUBLIC_KEY
+      );
 
       if (response.status === 200) {
-        setIsSuccess(true)
-        reset()
-        setTimeout(() => setIsSuccess(false), 5000)
+        setIsSuccess(true);
+        reset();
+        setTimeout(() => setIsSuccess(false), 5000);
       } else {
-        throw new Error('E-posta gönderilemedi')
+        throw new Error('E-posta gönderilemedi');
       }
     } catch (err) {
-      console.error('Email gönderirken hata:', err)
-      setError('Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
+      console.error('Email gönderirken hata:', err);
+      setError('Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const getInputClassName = (error?: FieldError) => 
     "w-full px-4 py-2 rounded-lg border " + 
