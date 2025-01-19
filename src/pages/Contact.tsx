@@ -56,19 +56,16 @@ const Contact: React.FC = () => {
     }
     
     try {
-      const templateParams = {
-        from_name: formData.name,
-        reply_to: formData.email,
-        phone: formData.phone,
-        subject: formData.subject,
-        message: formData.message
-      };
-
-      const response = await window.emailjs.sendForm(
+      const response = await window.emailjs.send(
         SERVICE_ID,
         TEMPLATE_ID,
-        templateParams,
-        PUBLIC_KEY
+        {
+          from_name: formData.name,
+          reply_to: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
+          message: formData.message
+        }
       );
 
       if (response.status === 200) {
@@ -211,7 +208,7 @@ const Contact: React.FC = () => {
               className="lg:col-span-2 bg-white rounded-xl shadow-lg p-8"
             >
               <h2 className="text-2xl font-bold mb-6">Bize Ulaşın</h2>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} id="contact-form" className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Ad Soyad
@@ -252,13 +249,8 @@ const Contact: React.FC = () => {
                   </label>
                   <input
                     type="tel"
-                    {...register("phone", {
-                      required: "Telefon numarası zorunludur",
-                      pattern: {
-                        value: /^[0-9\s+()-]+$/,
-                        message: "Geçerli bir telefon numarası giriniz",
-                      },
-                    })}
+                    {...register("phone")}
+                    name="phone"
                     className={getInputClassName(errors.phone)}
                   />
                   {errors.phone && (
@@ -272,7 +264,8 @@ const Contact: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("subject", { required: "Konu zorunludur" })}
+                    {...register("subject")}
+                    name="subject"
                     className={getInputClassName(errors.subject)}
                   />
                   {errors.subject && (
@@ -285,7 +278,8 @@ const Contact: React.FC = () => {
                     Mesaj
                   </label>
                   <textarea
-                    {...register("message", { required: "Mesaj zorunludur" })}
+                    {...register("message")}
+                    name="message"
                     rows={4}
                     className={getInputClassName(errors.message)}
                   />
