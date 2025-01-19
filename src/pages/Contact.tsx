@@ -352,13 +352,13 @@ const Contact: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="text-gray-600 text-lg"
             >
-              Starport Residence'taki ofisimize bekliyoruz. Profesyonel ekibimizle tanışın, ihtiyaçlarınızı dinleyelim.
+              ÇELİK LASHING PORT & SERVICES ofisimize bekliyoruz. Profesyonel ekibimizle tanışın, ihtiyaçlarınızı dinleyelim.
             </motion.p>
           </div>
 
           <div className="relative h-[400px] rounded-xl overflow-hidden shadow-lg">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3015.847145973634!2d29.23324187668457!3d40.87654997136689!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cad0f41e9c3925%3A0x42c2e8c8c2140c13!2sStarport%20Residence!5e0!3m2!1str!2str!4v1710775044407!5m2!1str!2str"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3014.480675167563!2d29.312462477272515!3d40.92713137136207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cad1d71da57733%3A0xf3d0ac1537c08a04!2zw4dFTMSwSyBMQVNIxLBORyBQT1JUICYgU0VSVsSwQ0VT!5e0!3m2!1str!2str!4v1737311332552!5m2!1str!2str"
               width="100%"
               height="100%"
               style={{ border: 0 }}
