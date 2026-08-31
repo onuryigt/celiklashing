@@ -17,7 +17,7 @@ const AdminLogin: React.FC = () => {
       setLoading(true);
       await login(email, password);
       navigate('/admin/dashboard');
-    } catch (error) {
+    } catch {
       setError('Giriş başarısız. E-posta veya şifre hatalı.');
     } finally {
       setLoading(false);

@@ -1,50 +1,73 @@
-# React + TypeScript + Vite
+# Çelik Lashing & Port Services
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Kurumsal web sitesi. React + TypeScript + Vite, Tailwind CSS, Firebase (galeri ve
+admin paneli), EmailJS (iletişim formu).
 
-Currently, two official plugins are available:
+## Geliştirme
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # tsc + vite build -> dist/
+npm run preview
+npm run lint
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Ortam değişkenleri
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Proje kökünde `.env` dosyası oluşturun (depoya işlenmez):
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
 ```
+VITE_EMAILJS_PUBLIC_KEY=...
+VITE_EMAILJS_SERVICE_ID=...
+VITE_EMAILJS_TEMPLATE_ID=...
+```
+
+`VITE_` önekli değerler derleme sırasında istemci paketine gömülür, yani gizli
+değildir. Gizli tutulması gereken hiçbir anahtarı buraya koymayın.
+
+Firebase yapılandırması `src/config/firebase.ts` içindedir.
+
+## Sık yapılan değişiklikler
+
+| Ne değişecek | Nerede |
+| --- | --- |
+| Telefon, adres, e-posta, sosyal medya | `src/config/site.ts` |
+| Ana sayfadaki sayaçlar (1000+, 600+ …) | `src/config/site.ts` → `STATS` |
+| Referans firmalar ve örnek projeler | `src/config/proof.ts` |
+| Renk paleti ve fontlar | `tailwind.config.js` |
+| Sayfa başlıkları / SEO açıklamaları | ilgili sayfadaki `useSeo({ … })` |
+
+**Deneyim yılı elle yazılmaz.** `src/config/site.ts` içindeki `FOUNDED_YEAR`
+değerinden hesaplanır (`yearsInBusiness()`), böylece her yıl kendiliğinden
+güncellenir.
+
+**Referanslar boşken görünmez.** `src/config/proof.ts` içindeki `CLIENTS` ve
+`CASES` dizileri boş olduğu sürece ilgili bölümler hiç render edilmez; boş
+çerçeve veya uydurma isim çıkmaz. Gerçek referanslarınızı ekleyince bölümler
+kendiliğinden görünür.
+
+## Görseller
+
+`public/` altındaki fotoğraflar WebP formatındadır. Yeni fotoğraf eklerken de
+WebP'ye çevirin — JPG'den yaklaşık %85 daha küçük oluyor.
+
+Sosyal medya paylaşım görseli `public/og-image.jpg` (1200×630). WhatsApp ve
+bazı tarayıcılar önizlemede WebP'yi desteklemediği için bu dosya bilerek JPG.
+
+## Yapı
+
+```
+src/
+  components/     Navbar, Footer, kart ve animasyon bileşenleri
+  config/         site.ts (firma bilgileri), proof.ts (referanslar), firebase.ts
+  hooks/          useSeo — sayfa başlığı ve paylaşım etiketleri
+  layouts/        MainLayout (genel), AdminLayout (yönetim)
+  pages/          Sayfalar; pages/admin altında yönetim ekranları
+```
+
+## Erişilebilirlik ve hareket
+
+Tüm animasyonlar `prefers-reduced-motion` tercihine saygı duyar. Yeni bir
+animasyon eklerken framer-motion'ın `useReducedMotion()` hook'unu kullanın ya da
+salt CSS animasyonlarını `motion-safe:` öneki ile yazın.

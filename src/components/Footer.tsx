@@ -1,153 +1,139 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaFacebook, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
+import { SITE, FOUNDED_YEAR } from '../config/site'
 
-const Footer: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+const services = [
+  ['gemi-proje-lashing', 'Gemi & Proje Lashing'],
+  ['arac-ustu-lashing', 'Araç Üstü Lashing'],
+  ['konteyner-lashing', 'Konteyner Lashing'],
+  ['vci-koruma', 'VCI Koruma'],
+  ['sandiklama', 'Sandıklama'],
+  ['brandalama', 'Brandalama'],
+]
 
-  return (
-    <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto py-12 px-4">
-        {/* Logo ve Şirket Bilgileri */}
-        <div className="flex flex-col items-center mb-12 text-center">
-          <Link to="/" onClick={scrollToTop} className="mb-4">
-            <img src="/logo.png" alt="Çelik Lashing Logo" className="h-24" />
+const socials = [
+  { href: SITE.social.facebook, Icon: FaFacebook, label: 'Facebook' },
+  { href: SITE.social.instagram, Icon: FaInstagram, label: 'Instagram' },
+  { href: SITE.social.linkedin, Icon: FaLinkedin, label: 'LinkedIn' },
+]
+
+const Footer: React.FC = () => (
+  <footer className="bg-steel-900 text-white/80">
+    <div className="container py-16">
+      <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
+        {/* Marka */}
+        <div>
+          <Link to="/" className="inline-flex items-center gap-3">
+            <img src="/logo.png" alt="" aria-hidden="true" className="h-12 w-auto" />
+            <span className="flex flex-col leading-none">
+              <span className="font-display text-2xl tracking-[0.2em] text-white">ÇELİK</span>
+              <span className="label text-white/50 mt-1">Lashing &amp; Port Services</span>
+            </span>
           </Link>
-          <h2 className="text-2xl font-bold mb-2">ÇELİK LASHING & PORT SERVICES</h2>
-          <p className="text-white/80 max-w-xl">
+          <p className="mt-5 text-sm leading-relaxed max-w-xs">
+            {FOUNDED_YEAR} yılından bu yana gemi, konteyner ve araç üstü lashing;
+            VCI koruma, sandıklama ve brandalama hizmetleri.
           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Kurumsal */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">Kurumsal</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/hakkimizda" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Hakkımızda
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Hizmetlerimiz
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Hizmetlerimiz */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">Hizmetlerimiz</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/hizmetler/gemi-proje-lashing" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Gemi & Proje Lashing
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler/arac-ustu-lashing" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Araç Üstü Lashing
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler/konteyner-lashing" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Konteyner Lashing
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler/vci-koruma" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  VCI Koruma
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler/sandiklama" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Sandıklama
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler/brandalama" onClick={scrollToTop} className="hover:text-primary transition-colors">
-                  Brandalama
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* İletişim */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">İletişim</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <FaMapMarkerAlt className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                <span>
-                  Yenişehir Mahallesi Osmanlı Bulvarı, Sümbül Sokak No:10 D:174, Starport Residence, Pendik/İstanbul
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <FaPhone className="w-5 h-5 text-primary" />
-                <a href="tel:+90216 592 88 65" className="hover:text-primary transition-colors">
-                  +90 216 592 88 65
-                </a>
-              </li>
-              <li className="flex items-center gap-3">
-                <FaEnvelope className="w-5 h-5 text-primary" />
-                <a href="mailto:info@celiklashing.com" className="hover:text-primary transition-colors">
-                  info@celiklashing.com
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Sosyal Medya */}
-          <div>
-            <h3 className="text-lg font-bold mb-4">Sosyal Medya</h3>
-            <div className="flex gap-4">
+          <div className="mt-6 flex gap-2">
+            {socials.map(({ href, Icon, label }) => (
               <a
-                href="https://www.facebook.com/people/%C3%87elik-Denizcilik-Konteyner-ve-Liman-Hizmetleri/100063509494638/"
+                key={label}
+                href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
+                aria-label={label}
+                className="w-10 h-10 grid place-items-center rounded-sm bg-white/10
+                           hover:bg-hazard transition-colors duration-200"
               >
-                <FaFacebook className="w-5 h-5" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
               </a>
-              <a
-                href="https://www.instagram.com/celikdenizcilik/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
-              >
-                <FaInstagram className="w-5 h-5" />
-              </a>
-              <a
-                href="https://tr.linkedin.com/in/%C3%A7etin-%C3%A7elik-a65798160"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-primary transition-colors"
-              >
-                <FaLinkedin className="w-5 h-5" />
-              </a>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Alt Bilgi */}
-        <div className="border-t border-white/10 mt-12 pt-8 text-center text-sm text-white/60">
-          <p>© 2025 Çelik Lashing. Tüm hakları saklıdır. Design by <a href="https://www.justgida.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Just</a></p>
-          <div className="mt-2 space-x-4">
-            <Link to="/kvkk" onClick={scrollToTop} className="hover:text-white transition-colors">
-              KVKK Aydınlatma Metni
-            </Link>
-            <span>|</span>
-            <Link to="/cerez-politikasi" onClick={scrollToTop} className="hover:text-white transition-colors">
-              Çerez Politikası
-            </Link>
-          </div>
+        {/* Kurumsal */}
+        <nav aria-label="Kurumsal">
+          <h2 className="label text-white/50">Kurumsal</h2>
+          <ul className="mt-4 space-y-2.5 text-sm">
+            {[
+              ['/hakkimizda', 'Hakkımızda'],
+              ['/hizmetler', 'Hizmetlerimiz'],
+              ['/galeri', 'Galeri'],
+              ['/iletisim', 'İletişim'],
+            ].map(([to, label]) => (
+              <li key={to}>
+                <Link to={to} className="hover:text-white transition-colors">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Hizmetler */}
+        <nav aria-label="Hizmetler">
+          <h2 className="label text-white/50">Hizmetler</h2>
+          <ul className="mt-4 space-y-2.5 text-sm">
+            {services.map(([id, label]) => (
+              <li key={id}>
+                <Link to={`/hizmetler/${id}`} className="hover:text-white transition-colors">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* İletişim */}
+        <div>
+          <h2 className="label text-white/50">İletişim</h2>
+          <ul className="mt-4 space-y-4 text-sm">
+            <li className="flex gap-3">
+              <FaMapMarkerAlt className="w-4 h-4 text-hazard shrink-0 mt-0.5" aria-hidden="true" />
+              <span className="leading-relaxed">
+                {SITE.address.street}, {SITE.address.district}/{SITE.address.city}
+              </span>
+            </li>
+            <li className="flex gap-3 items-center">
+              <FaPhone className="w-4 h-4 text-hazard shrink-0" aria-hidden="true" />
+              <a href={`tel:${SITE.phoneHref}`} className="hover:text-white transition-colors">
+                {SITE.phone}
+              </a>
+            </li>
+            <li className="flex gap-3 items-center">
+              <FaEnvelope className="w-4 h-4 text-hazard shrink-0" aria-hidden="true" />
+              <a href={`mailto:${SITE.email}`} className="hover:text-white transition-colors">
+                {SITE.email}
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </footer>
-  )
-}
+
+      <div className="mt-14 pt-8 border-t border-white/10 flex flex-wrap gap-4 justify-between items-center text-xs text-white/50">
+        <p>
+          © {new Date().getFullYear()} {SITE.shortName}. Tüm hakları saklıdır. Design by{' '}
+          <a
+            href="https://www.justgida.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors"
+          >
+            Just
+          </a>
+        </p>
+        <div className="flex gap-5">
+          <Link to="/kvkk" className="hover:text-white transition-colors">
+            KVKK Aydınlatma Metni
+          </Link>
+          <Link to="/cerez-politikasi" className="hover:text-white transition-colors">
+            Çerez Politikası
+          </Link>
+        </div>
+      </div>
+    </div>
+  </footer>
+)
 
 export default Footer

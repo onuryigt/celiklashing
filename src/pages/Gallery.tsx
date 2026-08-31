@@ -3,10 +3,10 @@ import { ref, listAll, getDownloadURL } from 'firebase/storage';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSeo } from '../hooks/useSeo';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { FiMaximize2, FiX } from 'react-icons/fi';
-// @ts-ignore
 import Masonry from 'react-masonry-css';
 
 interface Category {
@@ -23,6 +23,11 @@ interface GalleryImage {
 }
 
 const Gallery: React.FC = () => {
+  useSeo({
+    title: 'Galeri',
+    description: 'Çelik Lashing saha operasyonlarından fotoğraflar: gemi, konteyner ve araç üstü lashing uygulamaları.',
+    path: '/galeri',
+  });
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -109,9 +114,9 @@ const Gallery: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-steel-50 to-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gray-900 py-24 px-6 mb-12">
+      <div className="relative overflow-hidden bg-steel-900 pt-36 pb-20 px-6 mb-12">
         <div className="absolute inset-0 bg-black opacity-50" />
         <div className="relative max-w-7xl mx-auto text-center">
           <motion.h1 
@@ -123,7 +128,7 @@ const Gallery: React.FC = () => {
             Projelerimiz
           </motion.h1>
           <motion.p 
-            className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto"
+            className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
@@ -142,8 +147,8 @@ const Gallery: React.FC = () => {
             onClick={() => setSelectedCategory('all')}
             className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               selectedCategory === 'all'
-                ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                : 'text-gray-700 hover:bg-gray-100'
+                ? 'bg-secure text-white shadow-lg shadow-secure/30'
+                : 'text-steel-700 hover:bg-steel-100'
             }`}
           >
             Tümü
@@ -157,8 +162,8 @@ const Gallery: React.FC = () => {
               onClick={() => setSelectedCategory(category.id)}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 selectedCategory === category.id
-                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-secure text-white shadow-lg shadow-secure/30'
+                  : 'text-steel-700 hover:bg-steel-100'
               }`}
             >
               {category.name}
@@ -168,7 +173,7 @@ const Gallery: React.FC = () => {
 
         {/* Error State */}
         {error && (
-          <div className="text-center text-red-600 mb-8 p-4 bg-red-100 rounded-lg">
+          <div className="text-center text-red-600 mb-8 p-4 bg-red-100 rounded-sm">
             {error}
           </div>
         )}
@@ -177,10 +182,10 @@ const Gallery: React.FC = () => {
         {loading && (
           <div className="flex flex-col items-center justify-center min-h-[400px]">
             <div className="w-16 h-16 relative">
-              <div className="absolute top-0 left-0 w-full h-full border-4 border-gray-200 rounded-full"></div>
-              <div className="absolute top-0 left-0 w-full h-full border-4 border-primary rounded-full animate-spin border-t-transparent"></div>
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-steel-200 rounded-full"></div>
+              <div className="absolute top-0 left-0 w-full h-full border-4 border-secure rounded-full animate-spin border-t-transparent"></div>
             </div>
-            <p className="mt-4 text-gray-600">Görüntüler yükleniyor...</p>
+            <p className="mt-4 text-steel-600">Görüntüler yükleniyor...</p>
           </div>
         )}
 
@@ -200,7 +205,7 @@ const Gallery: React.FC = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <div 
-                  className="relative group overflow-hidden rounded-lg shadow-lg cursor-pointer"
+                  className="relative group overflow-hidden rounded-sm shadow-lg cursor-pointer"
                   onClick={() => setSelectedImage(image.url)}
                 >
                   <LazyLoadImage
@@ -213,7 +218,7 @@ const Gallery: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-white text-sm bg-primary/80 px-3 py-1 rounded-full">
+                        <span className="text-white text-sm bg-secure/80 px-3 py-1 rounded-full">
                           {categories.find(c => c.id === image.category)?.name || 'Diğer'}
                         </span>
                         <FiMaximize2 className="text-white w-6 h-6" />
@@ -228,7 +233,7 @@ const Gallery: React.FC = () => {
 
         {/* No Images State */}
         {!loading && images.length === 0 && !error && (
-          <div className="text-center text-gray-600 py-12">
+          <div className="text-center text-steel-600 py-12">
             Bu kategoride henüz görüntü yüklenmemiş.
           </div>
         )}
@@ -254,7 +259,7 @@ const Gallery: React.FC = () => {
                 <img
                   src={selectedImage}
                   alt="Selected"
-                  className="max-h-[90vh] max-w-full object-contain rounded-lg shadow-2xl"
+                  className="max-h-[90vh] max-w-full object-contain rounded-sm shadow-2xl"
                 />
                 <button 
                   className="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10 transition-colors"

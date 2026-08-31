@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import { useForm, FieldError } from 'react-hook-form'
-import { motion } from 'framer-motion'
+import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { motion, AnimatePresence } from 'framer-motion'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
+import emailjs from '@emailjs/browser'
+import { SITE } from '../config/site'
+import { useSeo } from '../hooks/useSeo'
 
 interface FormData {
   name: string
@@ -9,349 +12,354 @@ interface FormData {
   phone: string
   subject: string
   message: string
+  /** Bot tuzağı: insan bu alanı görmez, dolduran bot demektir. */
+  company: string
 }
 
-// .env dosyasından değerleri alın
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
 
-// TypeScript için tip tanımlaması
-declare global {
-  interface Window {
-    emailjs: any;
-  }
-}
+type Status = 'idle' | 'sending' | 'sent' | 'error'
+
+/** Yukarı kayan etiketli alan (A7). */
+const Field: React.FC<{
+  id: string
+  label: string
+  error?: string
+  children: React.ReactNode
+}> = ({ id, label, error, children }) => (
+  <div className={`relative ${error ? 'motion-safe:animate-[shake_0.34s_cubic-bezier(.36,.07,.19,.97)]' : ''}`}>
+    <div className="relative">
+      {children}
+      <label
+        htmlFor={id}
+        className={`pointer-events-none absolute left-3.5 top-4 origin-top-left text-[15px]
+                    transition-transform duration-200 ease-tension
+                    peer-focus:-translate-y-2.5 peer-focus:scale-[0.72]
+                    peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:scale-[0.72]
+                    ${error ? 'text-hazard' : 'text-steel-500 peer-focus:text-secure'}`}
+      >
+        {label}
+      </label>
+    </div>
+    <div
+      className={`overflow-hidden transition-[max-height,opacity] duration-200 ${
+        error ? 'max-h-12 opacity-100' : 'max-h-0 opacity-0'
+      }`}
+    >
+      <p className="mt-1.5 text-[13px] text-hazard-ink">{error}</p>
+    </div>
+  </div>
+)
+
+const inputClass = (hasError?: boolean) =>
+  `peer w-full rounded-sm border bg-white px-3.5 pb-2 pt-5 text-[15px] text-steel-900
+   placeholder-transparent transition-[border-color,box-shadow] duration-200
+   focus:outline-none focus:ring-4 ${
+     hasError
+       ? 'border-hazard focus:border-hazard focus:ring-hazard/15'
+       : 'border-steel-400 focus:border-secure focus:ring-secure/15'
+   }`
 
 const Contact: React.FC = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
+  const [status, setStatus] = useState<Status>('idle')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  useSeo({
+    title: 'İletişim',
+    description: `${SITE.shortName} ile iletişime geçin. ${SITE.address.district}, ${SITE.address.city}. Telefon: ${SITE.phone}`,
+    path: '/iletisim',
+  })
+
+  // EmailJS artık npm paketinden geliyor. Daha önce hem CDN <script> etiketi
+  // hem npm paketi yükleniyordu ve kod `window.emailjs` kullanıyordu; CDN
+  // erişilemediğinde form tamamen çalışmaz hâle geliyordu.
   useEffect(() => {
-    const loadEmailJS = async () => {
-      try {
-        if (PUBLIC_KEY) {
-          await window.emailjs.init(PUBLIC_KEY);
-          console.log('EmailJS initialized successfully');
-        }
-      } catch (error) {
-        console.error('EmailJS initialization error:', error);
-      }
-    };
+    if (PUBLIC_KEY) emailjs.init(PUBLIC_KEY)
+  }, [])
 
-    loadEmailJS();
-  }, []);
-  
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({ mode: 'onTouched' })
 
-  const onSubmit = async (formData: FormData) => {
-    setIsSubmitting(true);
-    setError(null);
-    
-    if (!SERVICE_ID || !TEMPLATE_ID) {
-      setError('Email servisi yapılandırması eksik!');
-      setIsSubmitting(false);
-      return;
+  const onSubmit = async (data: FormData) => {
+    // Tuzak alan doluysa sessizce başarı göster; bot geri bildirim almasın.
+    if (data.company) {
+      setStatus('sent')
+      reset()
+      return
     }
-    
+
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      setStatus('error')
+      setErrorMsg(
+        'E-posta servisi yapılandırılmamış. Lütfen bize doğrudan ' +
+          `${SITE.email} adresinden veya ${SITE.phone} numarasından ulaşın.`,
+      )
+      return
+    }
+
+    setStatus('sending')
+    setErrorMsg(null)
+
     try {
-      const response = await window.emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
-          from_name: formData.name,
-          reply_to: formData.email,
-          phone: formData.phone,
-          subject: formData.subject,
-          message: formData.message
-        }
-      );
-
-      if (response.status === 200) {
-        setIsSuccess(true);
-        reset();
-        setTimeout(() => setIsSuccess(false), 5000);
-      } else {
-        throw new Error('E-posta gönderilemedi');
-      }
+      await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        from_name: data.name,
+        reply_to: data.email,
+        phone: data.phone,
+        subject: data.subject,
+        message: data.message,
+      })
+      setStatus('sent')
+      reset()
+      window.setTimeout(() => setStatus('idle'), 6000)
     } catch (err) {
-      console.error('Email gönderirken hata:', err);
-      setError('Mesajınız gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
-    } finally {
-      setIsSubmitting(false);
+      console.error('E-posta gönderilemedi:', err)
+      setStatus('error')
+      setErrorMsg(
+        'Mesajınız gönderilemedi. Lütfen tekrar deneyin ya da ' +
+          `doğrudan ${SITE.phone} numarasından bize ulaşın.`,
+      )
     }
-  };
+  }
 
-  const getInputClassName = (error?: FieldError) => 
-    "w-full px-4 py-2 rounded-lg border " + 
-    (error ? "border-red-500" : "border-gray-300") + 
-    " focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
-
-  const getButtonClassName = () =>
-    "w-full btn btn-primary py-3 relative " + 
-    (isSubmitting ? "opacity-80" : "")
+  const contactCards = [
+    {
+      Icon: MapPinIcon,
+      title: 'Adres',
+      body: (
+        <>
+          {SITE.address.street}
+          <br />
+          {SITE.address.district} / {SITE.address.city}
+        </>
+      ),
+    },
+    {
+      Icon: PhoneIcon,
+      title: 'Telefon',
+      body: (
+        <a href={`tel:${SITE.phoneHref}`} className="hover:text-secure transition-colors">
+          {SITE.phone}
+        </a>
+      ),
+    },
+    {
+      Icon: EnvelopeIcon,
+      title: 'E-posta',
+      body: (
+        <a href={`mailto:${SITE.email}`} className="hover:text-secure transition-colors">
+          {SITE.email}
+        </a>
+      ),
+    },
+    { Icon: ClockIcon, title: 'Çalışma Saatleri', body: <>7/24 hizmetinizdeyiz</> },
+  ]
 
   return (
-    <div className="pt-24 pb-16">
-      {/* Hero Section */}
-      <section className="relative bg-primary text-white py-20 overflow-hidden mt-20">
+    <div>
+      {/* Hero */}
+      <section className="relative bg-steel-900 text-white pt-36 pb-20 overflow-hidden">
         <motion.div
-          initial={{ scale: 1.2, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.2 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0 object-cover object-bottom"
-          style={{
-            backgroundImage: 'url("/contact-bg.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center 74%',
-          }}
+          initial={{ scale: 1.12, opacity: 0 }}
+          animate={{ scale: 1, opacity: 0.25 }}
+          transition={{ duration: 1.2 }}
+          className="absolute inset-0 bg-cover"
+          style={{ backgroundImage: 'url("/contact-bg.webp")', backgroundPosition: 'center 74%' }}
         />
-        <div className="relative container mx-auto text-center px-4">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-6"
-          >
-            İletişime Geçin
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl opacity-90 max-w-3xl mx-auto"
-          >
-            7/24 hizmetinizdeyiz. Bizimle iletişime geçin, uzman ekibimiz size yardımcı olsun.
-          </motion.p>
+        <div className="absolute inset-0 bg-gradient-to-r from-steel-900/85 to-steel-900/40" />
+        <div className="container relative">
+          <span className="eyebrow">İletişim</span>
+          <h1 className="text-white text-4xl md:text-6xl mt-3 max-w-2xl">
+            Yükünüzü anlatın, çözümü birlikte kuralım.
+          </h1>
+          <p className="mt-5 text-white/85 text-lg max-w-2xl">
+            Saha ekibimiz 7/24 ulaşılabilir. Aciliyeti olan operasyonlar için telefonla
+            aramanız en hızlısı.
+          </p>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="py-20">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Contact Info */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="flex items-start space-x-4">
-                  <MapPinIcon className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Adres</h3>
-                    <p className="text-gray-600">
-                      Starport Residence, Yenişehir Mah. Dedepaşa Cad. No:19 Kat:23 D:115
-                      <br />
-                      Pendik/İstanbul
-                    </p>
+      {/* İletişim + form */}
+      <section className="py-20 md:py-24 bg-white">
+        <div className="container">
+          <div className="grid lg:grid-cols-3 gap-10">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-4 content-start">
+              {contactCards.map((card, i) => (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                  className="card p-6"
+                >
+                  <div className="flex gap-4">
+                    <card.Icon className="w-5 h-5 text-hazard shrink-0 mt-0.5" aria-hidden="true" />
+                    <div>
+                      <h3 className="text-lg">{card.title}</h3>
+                      <p className="mt-1.5 text-sm text-steel-600 leading-relaxed">{card.body}</p>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="flex items-start space-x-4">
-                  <PhoneIcon className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Telefon</h3>
-                    <p className="text-gray-600">+90 (216) 999 88 77</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="flex items-start space-x-4">
-                  <EnvelopeIcon className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">E-posta</h3>
-                    <p className="text-gray-600">info@celiklashing.com</p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-                className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="flex items-start space-x-4">
-                  <ClockIcon className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Çalışma Saatleri</h3>
-                    <p className="text-gray-600">7/24 Hizmetinizdeyiz</p>
-                  </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              ))}
             </div>
 
-            {/* Contact Form */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="lg:col-span-2 bg-white rounded-xl shadow-lg p-8"
+              className="lg:col-span-2 card p-6 md:p-9"
             >
-              <h2 className="text-2xl font-bold mb-6">Bize Ulaşın</h2>
-              <form onSubmit={handleSubmit(onSubmit)} id="contact-form" className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ad Soyad
-                  </label>
-                  <input
-                    type="text"
-                    {...register("name", { required: "Ad Soyad zorunludur" })}
-                    className={getInputClassName(errors.name)}
-                  />
-                  {errors.name && (
-                    <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-                  )}
+              <span className="eyebrow">Teklif formu</span>
+              <h2 className="text-2xl md:text-3xl mt-2">Bize ulaşın</h2>
+
+              <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-8 space-y-5">
+                {/* Bot tuzağı — ekranda ve ekran okuyucuda görünmez. */}
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                  {...register('company')}
+                />
+
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <Field id="name" label="Ad Soyad *" error={errors.name?.message}>
+                    <input
+                      id="name"
+                      type="text"
+                      placeholder=" "
+                      aria-invalid={!!errors.name}
+                      className={inputClass(!!errors.name)}
+                      {...register('name', { required: 'Adınızı yazar mısınız?' })}
+                    />
+                  </Field>
+
+                  <Field id="email" label="E-posta *" error={errors.email?.message}>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder=" "
+                      aria-invalid={!!errors.email}
+                      className={inputClass(!!errors.email)}
+                      {...register('email', {
+                        required: 'Size dönebilmemiz için e-posta gerekli.',
+                        pattern: {
+                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                          message: 'Bu adres eksik görünüyor — örnek: ad@firma.com',
+                        },
+                      })}
+                    />
+                  </Field>
+
+                  <Field id="phone" label="Telefon" error={errors.phone?.message}>
+                    <input
+                      id="phone"
+                      type="tel"
+                      placeholder=" "
+                      className={inputClass(!!errors.phone)}
+                      {...register('phone')}
+                    />
+                  </Field>
+
+                  <Field id="subject" label="Konu" error={errors.subject?.message}>
+                    <input
+                      id="subject"
+                      type="text"
+                      placeholder=" "
+                      className={inputClass(!!errors.subject)}
+                      {...register('subject')}
+                    />
+                  </Field>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    E-posta
-                  </label>
-                  <input
-                    type="email"
-                    {...register("email", {
-                      required: "E-posta zorunludur",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Geçerli bir e-posta adresi giriniz",
-                      },
-                    })}
-                    className={getInputClassName(errors.email)}
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Telefon
-                  </label>
-                  <input
-                    type="tel"
-                    {...register("phone")}
-                    name="phone"
-                    className={getInputClassName(errors.phone)}
-                  />
-                  {errors.phone && (
-                    <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Konu
-                  </label>
-                  <input
-                    type="text"
-                    {...register("subject")}
-                    name="subject"
-                    className={getInputClassName(errors.subject)}
-                  />
-                  {errors.subject && (
-                    <p className="mt-1 text-sm text-red-500">{errors.subject.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Mesaj
-                  </label>
+                <Field id="message" label="Yükünüzü ve güzergâhı kısaca anlatın *" error={errors.message?.message}>
                   <textarea
-                    {...register("message")}
-                    name="message"
-                    rows={4}
-                    className={getInputClassName(errors.message)}
+                    id="message"
+                    rows={5}
+                    placeholder=" "
+                    aria-invalid={!!errors.message}
+                    className={`${inputClass(!!errors.message)} resize-y`}
+                    {...register('message', { required: 'Kısa bir açıklama yazar mısınız?' })}
                   />
-                  {errors.message && (
-                    <p className="mt-1 text-sm text-red-500">{errors.message.message}</p>
-                  )}
+                </Field>
+
+                <div className="flex flex-wrap items-center gap-4 pt-1">
+                  <button
+                    type="submit"
+                    disabled={status === 'sending'}
+                    className="btn btn-primary min-w-[190px] py-3 disabled:opacity-80 disabled:cursor-wait"
+                  >
+                    {status === 'sending' ? (
+                      <>
+                        <span
+                          aria-hidden="true"
+                          className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin"
+                        />
+                        Gönderiliyor
+                      </>
+                    ) : status === 'sent' ? (
+                      'İletildi ✓'
+                    ) : (
+                      'Gönder'
+                    )}
+                  </button>
+                  <p className="text-xs text-steel-500">* işaretli alanlar zorunlu</p>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={getButtonClassName()}
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    </div>
-                  ) : (
-                    "Gönder"
-                  )}
-                </button>
-
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-center font-medium"
-                  >
-                    {error}
-                  </motion.div>
-                )}
-
-                {isSuccess && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-green-500 text-center font-medium"
-                  >
-                    Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağız.
-                  </motion.div>
-                )}
+                {/* Durum bildirimi — ekran okuyucuya da duyurulur. */}
+                <div aria-live="polite">
+                  <AnimatePresence mode="wait">
+                    {status === 'sent' && (
+                      <motion.p
+                        key="sent"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="rounded-sm bg-secure-soft text-secure-ink px-4 py-3 text-sm"
+                      >
+                        Mesajınız bize ulaştı. En kısa sürede dönüş yapacağız.
+                      </motion.p>
+                    )}
+                    {status === 'error' && errorMsg && (
+                      <motion.p
+                        key="error"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="rounded-sm bg-hazard-soft text-hazard-ink px-4 py-3 text-sm"
+                      >
+                        {errorMsg}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
               </form>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Map Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl font-bold mb-4"
-            >
-              Bizi Ziyaret Edin
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-gray-600 text-lg"
-            >
-              ÇELİK LASHING PORT & SERVICES ofisimize bekliyoruz. Profesyonel ekibimizle tanışın, ihtiyaçlarınızı dinleyelim.
-            </motion.p>
+      {/* Harita */}
+      <section className="py-20 bg-steel-100 border-t border-steel-200">
+        <div className="container">
+          <div className="max-w-2xl">
+            <span className="eyebrow">Ofis</span>
+            <h2 className="text-3xl md:text-4xl mt-3">Bizi ziyaret edin</h2>
+            <p className="mt-4 text-steel-600">
+              {SITE.name} ofisimizde sizi bekliyoruz. Ekibimizle tanışın, ihtiyaçlarınızı
+              birlikte değerlendirelim.
+            </p>
           </div>
-
-          <div className="relative h-[400px] rounded-xl overflow-hidden shadow-lg">
+          <div className="mt-10 h-[420px] rounded-sm overflow-hidden border border-steel-300">
             <iframe
+              title="Çelik Lashing ofis konumu — Google Haritalar"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3014.480675167563!2d29.312462477272515!3d40.92713137136207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cad1d71da57733%3A0xf3d0ac1537c08a04!2zw4dFTMSwSyBMQVNIxLBORyBQT1JUICYgU0VSVsSwQ0VT!5e0!3m2!1str!2str!4v1737311332552!5m2!1str!2str"
               width="100%"
               height="100%"

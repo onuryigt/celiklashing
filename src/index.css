@@ -1,3 +1,9 @@
+/* Marka fontları. Daha önce kod `Bebas Neue` ve `Inter` istiyordu ama hiçbir
+   yerde yüklenmiyordu; ziyaretçi sistem fontunu görüyordu. Oswald sıkışık
+   başlık fontu olarak Türkçe karakterleri tam destekliyor (Bebas Neue'nun
+   küçük harfi ve tam Türkçe kapsamı yok). */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,10 +11,27 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Sabit üst menünün çapa bağlantılarını kapatmasını engeller. */
+    scroll-padding-top: 6rem;
   }
-  
+
   body {
-    @apply font-sans text-gray-800;
+    @apply font-sans text-steel-700 bg-white antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display font-medium leading-tight text-steel-900;
+    text-wrap: balance;
+  }
+
+  /* Klavye kullanıcısı için görünür odak — daha önce hiç tanımlı değildi. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-hazard ring-offset-2 ring-offset-white rounded-sm;
+  }
+
+  /* Rakam kolonları hizalı dursun. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
   }
 }
 
@@ -16,12 +39,61 @@
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-  
-  .btn {
-    @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+
+  .label {
+    @apply font-mono text-[11px] uppercase tracking-label;
   }
-  
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           font-mono text-xs uppercase tracking-label rounded-sm
+           border border-transparent
+           transition-[background-color,border-color,color,transform] duration-200 ease-tension;
+  }
+
   .btn-primary {
-    @apply bg-primary text-white hover:bg-primary/90;
+    @apply bg-secure text-white border-secure hover:bg-secure-ink hover:border-secure-ink;
+  }
+
+  .btn-ghost {
+    @apply bg-white/10 text-white border-white/35 backdrop-blur-sm
+           hover:bg-white/20 hover:border-white/60;
+  }
+
+  .btn-outline {
+    @apply bg-transparent text-secure border-secure hover:bg-secure hover:text-white;
+  }
+
+  /* Bölüm üstü küçük etiket: "02 — Hizmetler" gibi. */
+  .eyebrow {
+    @apply label text-hazard;
+  }
+
+  .card {
+    @apply bg-white border border-steel-300 rounded-sm shadow-card;
+  }
+}
+
+/* Form hatasında alanın kısaca sarsılması (A7). */
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(3px); }
+  30%, 50%, 70% { transform: translateX(-5px); }
+  40%, 60% { transform: translateX(5px); }
+}
+
+/* Hareket azaltma tercihi açık olan ziyaretçide tüm animasyonlar kapanır.
+   Sitede daha önce bu desteğin karşılığı yoktu. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
