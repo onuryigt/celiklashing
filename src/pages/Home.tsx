@@ -1,316 +1,270 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { FaShip, FaTruck, FaBox, FaShieldAlt, FaWarehouse, FaUmbrella } from 'react-icons/fa'
+import LashingMark from '../components/LashingMark'
+import LoadingScene from '../components/LoadingScene'
+import ServiceCard from '../components/ServiceCard'
+import CountUp from '../components/CountUp'
+import ProofStrip from '../components/ProofStrip'
+import { STATS, SITE, FOUNDED_YEAR } from '../config/site'
+import { useSeo } from '../hooks/useSeo'
 
 const services = [
   {
     id: 'gemi-proje-lashing',
     title: 'Gemi & Proje Lashing',
     description: 'Deniz taşımacılığında yüklerin güvenli şekilde bağlanması',
-    Icon: FaShip
+    Icon: FaShip,
   },
   {
     id: 'arac-ustu-lashing',
     title: 'Araç Üstü Lashing',
     description: 'Karayolu taşımacılığında yüklerin güvenli şekilde bağlanması',
-    Icon: FaTruck
+    Icon: FaTruck,
   },
   {
     id: 'konteyner-lashing',
     title: 'Konteyner Lashing',
     description: 'Konteynerlerin güvenli şekilde bağlanması ve sabitlenmesi',
-    Icon: FaWarehouse
+    Icon: FaWarehouse,
   },
   {
     id: 'vci-koruma',
     title: 'VCI Koruma',
     description: 'Metal yüzeylerin korozyona karşı korunması',
-    Icon: FaShieldAlt
+    Icon: FaShieldAlt,
   },
   {
     id: 'sandiklama',
     title: 'Sandıklama',
     description: 'Özel ürünler için güvenli paketleme çözümleri',
-    Icon: FaBox
+    Icon: FaBox,
   },
   {
     id: 'brandalama',
     title: 'Brandalama',
     description: 'Açık yüklerin hava koşullarından korunması',
-    Icon: FaUmbrella
-  }
+    Icon: FaUmbrella,
+  },
 ]
 
-const stats = [
-  { label: 'Yıllık Deneyim', value: '25+' },
-  { label: 'Başarılı Proje', value: '1000+' },
-  { label: 'Mutlu Müşteri', value: '600+' },
-  { label: 'Uzman Ekip', value: '20+' },
+const heroSlides = [
+  { src: '/hero1.webp', small: '/hero1-sm.webp' },
+  { src: '/hero2.webp', small: '/hero2-sm.webp' },
+  { src: '/hero3.webp', small: '/hero3-sm.webp' },
 ]
 
 const Home: React.FC = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const images = ['bg-[url("/hero1.jpg")]', 'bg-[url("/hero2.jpg")]', 'bg-[url("/hero3.jpg")]']
+  const [slide, setSlide] = useState(0)
+  const reduce = useReducedMotion()
+
+  useSeo({
+    title: 'Gemi, Konteyner ve Araç Üstü Lashing',
+    path: '/',
+  })
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length)
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [])
+    if (reduce) return
+    const timer = window.setInterval(() => setSlide((p) => (p + 1) % heroSlides.length), 6000)
+    return () => window.clearInterval(timer)
+  }, [reduce])
 
   return (
-    <div className="pt-16">
-      {/* Hero Section */}
-      <section className="relative h-screen text-white">
+    <div>
+      {/* ---------------------------------------------------------------- */}
+      {/* Hero                                                             */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="relative min-h-[92vh] flex items-center text-white overflow-hidden">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={currentImageIndex}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <motion.img
+            key={slide}
+            src={heroSlides[slide].src}
+            srcSet={`${heroSlides[slide].small} 900w, ${heroSlides[slide].src} 1920w`}
+            sizes="100vw"
+            alt=""
+            aria-hidden="true"
+            /* İlk kare hemen gerekiyor; sonrakiler döngüde geliyor.
+               (fetchPriority prop'u React 19 ile geldi, bu proje React 18.) */
+            loading={slide === 0 ? 'eager' : 'lazy'}
+            initial={{ opacity: 0, scale: reduce ? 1 : 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
-            className={"absolute inset-0 " + images[currentImageIndex] + " bg-cover bg-center bg-no-repeat"}
+            transition={{ opacity: { duration: 1 }, scale: { duration: 7, ease: 'linear' } }}
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </AnimatePresence>
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative h-full container mx-auto flex flex-col justify-center items-center text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl md:text-7xl font-bold mb-6"
-          >
-            Lashing Hizmeti için<br />Birebir Çözümler
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl md:text-2xl mb-8 max-w-3xl"
-          >
-            2000 yılından bu yana denizcilik ve yük sabitleme alanında profesyonel hizmet veriyoruz
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
-          >
-            <Link to="/iletisim" className="w-[280px] sm:w-auto btn btn-primary text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3">
-              Bizimle İletişime Geçin
-            </Link>
-            <Link to="/hizmetler" className="w-[280px] sm:w-auto btn bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white text-base sm:text-lg px-6 sm:px-8 py-2.5 sm:py-3">
-              Hizmetlerimiz
-            </Link>
-          </motion.div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg className="fill-current text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120">
-            <path d="M0,32L60,37.3C120,43,240,53,360,48C480,43,600,21,720,26.7C840,32,960,64,1080,69.3C1200,75,1320,53,1380,42.7L1440,32L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z" />
-          </svg>
-        </div>
-      </section>
 
-      {/* Yeni Görsel */}
-      <div className="relative pointer-events-none">
-        <img
-          src="/container12.png"
-          alt="Container Image"
-          className="absolute hidden md:block"
-          style={{
-            top: '650px',
-            left: '20px',
-            zIndex: 10,
-            width: '1100px',
-            height: 'auto'
-          }}
-        />
-        <img
-          src="/container12.png"
-          alt="Container Image"
-          className="absolute block md:hidden"
-          style={{
-            top: '3050px',
-            left: '33%',
-            transform: 'translateX(-50%)',
-            zIndex: 10,
-            width: '300px',
-            height: 'auto'
-          }}
-        />
-      </div>
-      {/* Yeni Görsel */}
-      <div className="relative pointer-events-none">
-        <img
-          src="/strap.png"
-          alt="strap Image"
-          className="absolute hidden md:block"
-          style={{
-            top: '1037px',
-            left: '1380px',
-            zIndex: 10,
-            width: '1170px',
-            height: 'auto'
-          }}
-        />
-        <img
-          src="/strap.png"
-          alt="strap Image"
-          className="absolute block md:hidden"
-          style={{
-            top: '3080px',
-            left: '26%',
-            transform: 'translateX(-90%)',
-            zIndex: 0,
-            width: '10px',
-            height: 'auto'
-          }}
-        />
-      </div>
+        {/* Düz siyah yerine yönlü degrade — metin okunurluğu artıyor,
+            fotoğraf tamamen boğulmuyor. */}
+        <div className="absolute inset-0 bg-gradient-to-r from-steel-900/90 via-steel-900/70 to-steel-900/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-steel-900/75 via-transparent to-steel-900/70" />
 
-      {/* Stats Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ 
-                  y: -10,
-                  transition: { duration: 0.2 }
-                }}
-                className="relative group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-400/20 rounded-2xl transform rotate-3 group-hover:rotate-0 transition-transform duration-300" />
-                <div className="relative bg-white p-8 rounded-2xl shadow-lg group-hover:shadow-2xl transition-all duration-300 border border-gray-100">
-                  <div className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-br from-primary to-blue-400 rounded-xl transform -rotate-6 group-hover:rotate-0 transition-transform duration-300" />
-                  <div className="absolute -top-3 -right-3 w-14 h-14 bg-white rounded-xl flex items-center justify-center transform -rotate-6 group-hover:rotate-0 transition-transform duration-300">
-                    {index === 0 && (
-                      <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                    {index === 1 && (
-                      <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                    {index === 2 && (
-                      <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                    {index === 3 && (
-                      <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="text-5xl font-bold text-primary mb-4 font-['Bebas_Neue'] tracking-wider">
-                    <motion.span
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.2 }}
-                    >
-                      {stat.value}
-                    </motion.span>
-                  </div>
-                  <div className="text-gray-600 text-lg font-medium">
-                    {stat.label}
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-2xl" />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <div className="container relative z-10 pt-28 pb-20">
+          <div className="max-w-4xl">
+            <motion.span
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="label text-hazard-light inline-block"
+            >
+              {FOUNDED_YEAR}’den beri · Pendik, İstanbul
+            </motion.span>
 
-      {/* Services Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl font-bold text-center mb-12"
-          >
-            Hizmetlerimiz
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {services.map((service) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <div className="aspect-w-16 aspect-h-9 relative">
-                  <img
-                    src={`/services/${service.id}.jpg`}
-                    alt={service.title}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 group-hover:opacity-70 transition-opacity" />
-                  <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                        <service.Icon className="w-5 h-5" />
-                      </div>
-                      <h3 className="text-xl font-bold">{service.title}</h3>
-                    </div>
-                    <p className="text-white/90 mb-4 line-clamp-2">{service.description}</p>
-                    <Link
-                      to={`/hizmetler/${service.id}`}
-                      className="inline-flex items-center text-sm font-medium text-white/90 hover:text-white group/link"
-                    >
-                      Detaylı Bilgi
-                      <svg 
-                        className="w-4 h-4 ml-1 transform transition-transform group-hover/link:translate-x-1" 
-                        viewBox="0 0 20 20" 
-                        fill="currentColor"
-                      >
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.2, 0.85, 0.3, 1] }}
+              className="text-white text-[clamp(2.5rem,6vw,4.5rem)] mt-4"
+            >
+              {/* Satır sonları kasıtlı: "yok." tek başına alta düşmesin. */}
+              Tonlarca yük.
+              <br />
+              Tek bir gevşek
+              <br />
+              nokta yok.
+            </motion.h1>
 
-      {/* About Section */}
-      <section className="py-20 bg-primary text-white">
-        <div className="container mx-auto">
-          <div className="max-w-3xl mx-auto text-center">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.22 }}
+              className="mt-6 text-lg md:text-xl text-white/85 max-w-2xl leading-relaxed"
+            >
+              Gemi, konteyner ve araç üstü lashing — sertifikalı ekip, modern ekipman,
+              7/24 saha operasyonu.
+            </motion.p>
+
+            {/* A1: halatlar gerilir, yük sabitlenir */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="mt-8 max-w-lg"
+            >
+              <LashingMark tone="onDark" />
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              className="mt-8 flex flex-col sm:flex-row gap-3"
             >
-              <h2 className="text-4xl font-bold mb-6">Neden Biz?</h2>
-              <p className="text-lg mb-8 opacity-90">
-                Çelik Denizcilik olarak, 2000 yılından bu yana denizcilik ve yük sabitleme alanında profesyonel hizmet vermekteyiz. 
-                Uzman ekibimiz ve modern ekipmanlarımızla, yüklerinizin güvenliği için en iyi çözümleri sunuyoruz.
-              </p>
-              <Link 
-                to="/hakkimizda"
-                onClick={() => window.scrollTo(0, 0)}
-                className="btn bg-white text-primary hover:bg-white/90 text-lg px-8 py-3"
-              >
-                Daha Fazla Bilgi
+              <Link to="/iletisim" className="btn btn-primary">
+                Teklif alın
               </Link>
+              <Link to="/hizmetler" className="btn btn-ghost">
+                Hizmetlerimiz
+              </Link>
+              <a href={`tel:${SITE.phoneHref}`} className="btn btn-ghost">
+                {SITE.phone}
+              </a>
             </motion.div>
+          </div>
+        </div>
+
+        {/* Slayt göstergesi — aynı zamanda elle geçiş düğmesi */}
+        <div className="absolute bottom-6 left-0 right-0 z-10">
+          <div className="container flex gap-2">
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setSlide(i)}
+                aria-label={`${i + 1}. görsele geç`}
+                aria-current={i === slide}
+                className={`h-1 rounded-full transition-all duration-500 ease-tension ${
+                  i === slide ? 'w-12 bg-hazard' : 'w-6 bg-white/40 hover:bg-white/70'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* İstatistikler (A2)                                               */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="bg-white border-b border-steel-200">
+        <div className="container">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-steel-200">
+            {STATS.map((stat, i) => (
+              <div key={stat.label} className="px-5 py-8 md:px-8 md:py-12 first:pl-0 lg:last:pr-0">
+                <div className="font-display text-5xl md:text-6xl text-secure leading-none">
+                  <CountUp to={stat.value} suffix={stat.suffix} delay={i * 110} />
+                </div>
+                <div className="mt-3 text-sm text-steel-600">{stat.label}</div>
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.1, delay: i * 0.11, ease: [0.2, 0.8, 0.25, 1] }}
+                  className="mt-4 h-0.5 bg-hazard origin-left"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Süreç + kaydırmaya bağlı sahne (A4)                              */}
+      {/* ---------------------------------------------------------------- */}
+      <LoadingScene />
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Hizmetler (A3)                                                   */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="container">
+          <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
+            <div className="max-w-xl">
+              <span className="eyebrow">Hizmetler</span>
+              <h2 className="text-3xl md:text-5xl mt-3">Yükünüz hangi yoldan giderse gitsin</h2>
+            </div>
+            <Link to="/hizmetler" className="btn btn-outline">
+              Tüm hizmetler
+            </Link>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((service, i) => (
+              <ServiceCard key={service.id} index={i} {...service} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Kanıt (B4)                                                       */}
+      {/* ---------------------------------------------------------------- */}
+      <ProofStrip />
+
+      {/* ---------------------------------------------------------------- */}
+      {/* Kapanış                                                          */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="py-20 md:py-24 bg-secure text-white">
+        <div className="container">
+          <div className="max-w-2xl">
+            <span className="label text-white/60">Neden biz</span>
+            <h2 className="text-white text-3xl md:text-5xl mt-3">
+              {new Date().getFullYear() - FOUNDED_YEAR} yıldır aynı iş, her seferinde
+              aynı titizlikle.
+            </h2>
+            <p className="mt-6 text-white/85 leading-relaxed">
+              {FOUNDED_YEAR} yılından bu yana denizcilik ve yük sabitleme alanında hizmet
+              veriyoruz. Uzman ekibimiz ve modern ekipmanlarımızla, yüklerinizin güvenliği
+              için en uygun çözümü kuruyoruz.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/hakkimizda" className="btn bg-white text-secure hover:bg-white/90">
+                Hakkımızda
+              </Link>
+              <Link to="/iletisim" className="btn btn-ghost">
+                İletişime geçin
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -318,4 +272,4 @@ const Home: React.FC = () => {
   )
 }
 
-export default Home 
+export default Home

@@ -32,3 +32,10 @@ auth_config.json
 serviceAccountKey.json
 celik-lashing-firebase-adminsdk*.json
 users.json
+
+# Local env (VITE_ degerleri zaten istemciye gider, yine de depoda durmasin)
+.env
+.env.local
+.env.production
+.env.*.local
+tsconfig.tsbuildinfo
