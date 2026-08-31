@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaFacebook, FaInstagram, FaLinkedin, FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa'
-import { SITE, FOUNDED_YEAR } from '../config/site'
+import { SITE, FOUNDED_YEAR, OFFICES } from '../config/site'
 
 const services = [
   ['gemi-proje-lashing', 'Gemi & Proje Lashing'],
@@ -89,12 +89,15 @@ const Footer: React.FC = () => (
         <div>
           <h2 className="label text-white/50">İletişim</h2>
           <ul className="mt-4 space-y-4 text-sm">
-            <li className="flex gap-3">
-              <FaMapMarkerAlt className="w-4 h-4 text-hazard shrink-0 mt-0.5" aria-hidden="true" />
-              <span className="leading-relaxed">
-                {SITE.address.street}, {SITE.address.district}/{SITE.address.city}
-              </span>
-            </li>
+            {OFFICES.map((office) => (
+              <li key={office.id} className="flex gap-3">
+                <FaMapMarkerAlt className="w-4 h-4 text-hazard shrink-0 mt-0.5" aria-hidden="true" />
+                <span className="leading-relaxed">
+                  <strong className="block text-white font-semibold">{office.label}</strong>
+                  {office.street}, {office.district}/{office.city}
+                </span>
+              </li>
+            ))}
             <li className="flex gap-3 items-center">
               <FaPhone className="w-4 h-4 text-hazard shrink-0" aria-hidden="true" />
               <a href={`tel:${SITE.phoneHref}`} className="hover:text-white transition-colors">

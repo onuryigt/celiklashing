@@ -9,7 +9,7 @@
     <title>Çelik Lashing & Port Services | Gemi, Konteyner ve Araç Üstü Lashing</title>
     <meta
       name="description"
-      content="2000'den bu yana Pendik, İstanbul'da gemi ve proje lashing, konteyner lashing, araç üstü lashing, VCI korozyon koruma, sandıklama ve brandalama hizmetleri. Sertifikalı ekip, 7/24 operasyon."
+      content="2000'den bu yana gemi ve proje lashing, konteyner lashing, araç üstü lashing, VCI korozyon koruma, sandıklama ve brandalama hizmetleri. İstanbul (Pendik) ve Ankara (Sincan) ofisleri, sertifikalı ekip, 7/24 operasyon."
     />
     <link rel="canonical" href="https://www.celiklashing.com/" />
     <meta name="robots" content="index, follow" />
@@ -22,7 +22,7 @@
     <meta property="og:title" content="Çelik Lashing & Port Services" />
     <meta
       property="og:description"
-      content="Gemi, konteyner ve araç üstü lashing, VCI koruma, sandıklama ve brandalama. 2000'den bu yana Pendik, İstanbul."
+      content="Gemi, konteyner ve araç üstü lashing, VCI koruma, sandıklama ve brandalama. 2000'den bu yana İstanbul ve Ankara."
     />
     <meta property="og:image" content="https://www.celiklashing.com/og-image.jpg" />
     <meta property="og:image:alt" content="Çelik Lashing saha operasyonu" />
@@ -32,38 +32,60 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "ÇELİK LASHING & PORT SERVICES",
-        "url": "https://www.celiklashing.com",
-        "image": "https://www.celiklashing.com/logo.png",
-        "telephone": "+902165928865",
-        "email": "info@celiklashing.com",
-        "foundingDate": "2000",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Yenişehir Mahallesi Osmanlı Bulvarı, Sümbül Sokak No:10 D:174, Starport Residence",
-          "addressLocality": "Pendik",
-          "addressRegion": "İstanbul",
-          "postalCode": "34912",
-          "addressCountry": "TR"
-        },
-        "areaServed": "TR",
-        "sameAs": [
-          "https://www.instagram.com/celikdenizcilik/",
-          "https://tr.linkedin.com/in/%C3%A7etin-%C3%A7elik-a65798160"
-        ],
-        "hasOfferCatalog": {
-          "@type": "OfferCatalog",
-          "name": "Hizmetler",
-          "itemListElement": [
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gemi & Proje Lashing" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Araç Üstü Lashing" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Konteyner Lashing" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "VCI Koruma" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sandıklama" } },
-            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Brandalama" } }
-          ]
-        }
+        "@graph": [
+          {
+            "@type": "LocalBusiness",
+            "@id": "https://www.celiklashing.com/#merkez",
+            "name": "ÇELİK LASHING & PORT SERVICES",
+            "url": "https://www.celiklashing.com",
+            "image": "https://www.celiklashing.com/og-image.jpg",
+            "telephone": "+902165928865",
+            "email": "info@celiklashing.com",
+            "foundingDate": "2000",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Kurtköy Mahallesi, Düzenli Sokak No:4/B",
+              "addressLocality": "Pendik",
+              "addressRegion": "İstanbul",
+              "addressCountry": "TR"
+            },
+            "areaServed": "TR",
+            "sameAs": [
+              "https://www.instagram.com/celikdenizcilik/",
+              "https://tr.linkedin.com/in/%C3%A7etin-%C3%A7elik-a65798160"
+            ],
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Hizmetler",
+              "itemListElement": [
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gemi & Proje Lashing" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Araç Üstü Lashing" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Konteyner Lashing" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "VCI Koruma" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Sandıklama" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Brandalama" } }
+              ]
+            }
+          },
+          {
+            "@type": "LocalBusiness",
+            "@id": "https://www.celiklashing.com/#ankara",
+            "name": "ÇELİK LASHING & PORT SERVICES — Ankara Şubesi",
+            "url": "https://www.celiklashing.com/iletisim",
+            "image": "https://www.celiklashing.com/og-image.jpg",
+            "telephone": "+902165928865",
+            "email": "info@celiklashing.com",
+            "parentOrganization": { "@id": "https://www.celiklashing.com/#merkez" },
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Yunus Emre Mahallesi, Canlı Sokak, Akşen Sitesi J/7 Blok No:12",
+              "addressLocality": "Sincan",
+              "addressRegion": "Ankara",
+              "addressCountry": "TR"
+            },
+            "areaServed": "TR"
+          }
+        ]
       }
     </script>
   </head>

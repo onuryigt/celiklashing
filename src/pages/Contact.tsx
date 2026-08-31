@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react/24/outline'
 import emailjs from '@emailjs/browser'
-import { SITE } from '../config/site'
+import { SITE, OFFICES, mapEmbedUrl } from '../config/site'
 import { useSeo } from '../hooks/useSeo'
 
 interface FormData {
@@ -62,13 +62,34 @@ const inputClass = (hasError?: boolean) =>
        : 'border-steel-400 focus:border-secure focus:ring-secure/15'
    }`
 
+/**
+ * EmailJS erisilemedigi ya da yapilandirilmadigi durumda, ziyaretcinin yazdigi
+ * mesaj kaybolmasin diye kendi e-posta uygulamasinda acilacak bir baglanti
+ * uretir. Form calismasa bile mesaj bize ulasir.
+ */
+const buildMailto = (d: FormData) => {
+  const subject = d.subject?.trim() || 'Web sitesi teklif talebi'
+  const body = [
+    `Ad Soyad: ${d.name}`,
+    `E-posta: ${d.email}`,
+    d.phone ? `Telefon: ${d.phone}` : null,
+    '',
+    d.message,
+  ]
+    .filter((l) => l !== null)
+    .join('\n')
+  return `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
 const Contact: React.FC = () => {
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  /** Gonderim basarisizsa ziyaretciye sunulan yedek e-posta baglantisi. */
+  const [fallbackHref, setFallbackHref] = useState<string | null>(null)
 
   useSeo({
     title: 'İletişim',
-    description: `${SITE.shortName} ile iletişime geçin. ${SITE.address.district}, ${SITE.address.city}. Telefon: ${SITE.phone}`,
+    description: `${SITE.shortName} ile iletişime geçin. ${OFFICES.map((o) => `${o.district}/${o.city}`).join(' ve ')}. Telefon: ${SITE.phone}`,
     path: '/iletisim',
   })
 
@@ -96,15 +117,14 @@ const Contact: React.FC = () => {
 
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
       setStatus('error')
-      setErrorMsg(
-        'E-posta servisi yapılandırılmamış. Lütfen bize doğrudan ' +
-          `${SITE.email} adresinden veya ${SITE.phone} numarasından ulaşın.`,
-      )
+      setFallbackHref(buildMailto(data))
+      setErrorMsg('Formu şu anda buradan gönderemiyoruz. Yazdıklarınız duruyor —')
       return
     }
 
     setStatus('sending')
     setErrorMsg(null)
+    setFallbackHref(null)
 
     try {
       await emailjs.send(SERVICE_ID, TEMPLATE_ID, {
@@ -120,25 +140,23 @@ const Contact: React.FC = () => {
     } catch (err) {
       console.error('E-posta gönderilemedi:', err)
       setStatus('error')
-      setErrorMsg(
-        'Mesajınız gönderilemedi. Lütfen tekrar deneyin ya da ' +
-          `doğrudan ${SITE.phone} numarasından bize ulaşın.`,
-      )
+      setFallbackHref(buildMailto(data))
+      setErrorMsg('Mesajınız gönderilemedi. Yazdıklarınız duruyor —')
     }
   }
 
   const contactCards = [
-    {
+    ...OFFICES.map((office) => ({
       Icon: MapPinIcon,
-      title: 'Adres',
+      title: office.label,
       body: (
         <>
-          {SITE.address.street}
+          {office.street}
           <br />
-          {SITE.address.district} / {SITE.address.city}
+          {office.district} / {office.city}
         </>
       ),
-    },
+    })),
     {
       Icon: PhoneIcon,
       title: 'Telefon',
@@ -335,7 +353,17 @@ const Contact: React.FC = () => {
                         exit={{ opacity: 0 }}
                         className="rounded-sm bg-hazard-soft text-hazard-ink px-4 py-3 text-sm"
                       >
-                        {errorMsg}
+                        {errorMsg}{' '}
+                        {fallbackHref && (
+                          <a href={fallbackHref} className="underline font-semibold">
+                            e-posta uygulamanızla gönderin
+                          </a>
+                        )}
+                        {fallbackHref && <> ya da </>}
+                        <a href={`tel:${SITE.phoneHref}`} className="underline font-semibold">
+                          {SITE.phone}
+                        </a>{' '}
+                        numarasından bize ulaşın.
                       </motion.p>
                     )}
                   </AnimatePresence>
@@ -350,24 +378,48 @@ const Contact: React.FC = () => {
       <section className="py-20 bg-steel-100 border-t border-steel-200">
         <div className="container">
           <div className="max-w-2xl">
-            <span className="eyebrow">Ofis</span>
+            <span className="eyebrow">Ofisler</span>
             <h2 className="text-3xl md:text-4xl mt-3">Bizi ziyaret edin</h2>
             <p className="mt-4 text-steel-600">
-              {SITE.name} ofisimizde sizi bekliyoruz. Ekibimizle tanışın, ihtiyaçlarınızı
-              birlikte değerlendirelim.
+              {SITE.name} olarak {OFFICES.map((o) => o.city).join(' ve ')} ofislerimizde
+              sizi bekliyoruz. Ekibimizle tanışın, ihtiyaçlarınızı birlikte
+              değerlendirelim.
             </p>
           </div>
-          <div className="mt-10 h-[420px] rounded-sm overflow-hidden border border-steel-300">
-            <iframe
-              title="Çelik Lashing ofis konumu — Google Haritalar"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3014.480675167563!2d29.312462477272515!3d40.92713137136207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14cad1d71da57733%3A0xf3d0ac1537c08a04!2zw4dFTMSwSyBMQVNIxLBORyBQT1JUICYgU0VSVsSwQ0VT!5e0!3m2!1str!2str!4v1737311332552!5m2!1str!2str"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+
+          <div className="mt-10 grid gap-8 md:grid-cols-2">
+            {OFFICES.map((office) => (
+              <div key={office.id}>
+                <div className="flex flex-wrap items-baseline justify-between gap-3">
+                  <h3 className="text-xl">{office.label}</h3>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      `${office.street}, ${office.district}/${office.city}`,
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="label text-secure"
+                  >
+                    Yol tarifi al →
+                  </a>
+                </div>
+                <p className="mt-2 text-sm text-steel-600">
+                  {office.street}, {office.district}/{office.city}
+                </p>
+                <div className="mt-4 h-[320px] rounded-sm overflow-hidden border border-steel-300">
+                  <iframe
+                    title={`${office.label} konumu — Google Haritalar`}
+                    src={mapEmbedUrl(office)}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
