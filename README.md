@@ -36,7 +36,7 @@ Firebase yapılandırması `src/config/firebase.ts` içindedir.
 | Ana sayfadaki sayaçlar (1000+, 600+ …) | `src/config/site.ts` → `STATS` |
 | Referans firmalar ve örnek projeler | `src/config/proof.ts` |
 | Renk paleti ve fontlar | `tailwind.config.js` |
-| Sayfa başlıkları / SEO açıklamaları | ilgili sayfadaki `useSeo({ … })` |
+| Sayfa başlıkları / SEO açıklamaları | `src/config/seo.ts` |
 
 **Deneyim yılı elle yazılmaz.** `src/config/site.ts` içindeki `FOUNDED_YEAR`
 değerinden hesaplanır (`yearsInBusiness()`), böylece her yıl kendiliğinden
@@ -71,3 +71,35 @@ src/
 Tüm animasyonlar `prefers-reduced-motion` tercihine saygı duyar. Yeni bir
 animasyon eklerken framer-motion'ın `useReducedMotion()` hook'unu kullanın ya da
 salt CSS animasyonlarını `motion-safe:` öneki ile yazın.
+
+## SEO ve prerender
+
+Site tek sayfa uygulaması; başlık ve paylaşım etiketlerini normalde JavaScript
+yazar. **Ama WhatsApp, Facebook, LinkedIn ve X'in önizleme botları JavaScript
+çalıştırmaz** — bu yüzden `vite build` sonunda çalışan `celik-prerender`
+eklentisi (`vite.config.ts`) her rota için gerçek statik HTML üretir:
+
+```
+dist/hizmetler/vci-koruma/index.html   ← kendi başlığı, açıklaması, canonical'ı
+```
+
+Vercel dosya sistemini `rewrites` kuralından önce kontrol ettiği için bu
+dosyalar servis edilir; bilinmeyen adresler `vercel.json`'daki SPA yedeğine
+düşer.
+
+**Bir sayfanın başlığını/açıklamasını değiştirmek için tek yer:
+`src/config/seo.ts`.** Hem tarayıcıdaki `useSeo` hook'u hem prerender eklentisi
+hem de `sitemap.xml` bu dosyadan beslenir — üçünün arası açılamaz.
+
+Yeni bir sayfa eklerken `seo.ts`'e kaydını yazmayı unutmayın; aksi halde
+prerender edilmez ve sitemap'e girmez.
+
+Prerender, `index.html` içindeki etiketleri bulup değiştirerek çalışır. Bir
+etiketi silerseniz **build bilerek kırılır** (sessizce yanlış çıktı üretmesin
+diye). Hata mesajı hangi etiketin kaybolduğunu söyler.
+
+### Sizin yapmanız gerekenler
+
+- **Google Search Console**: alan adını doğrulayıp `sitemap.xml`'i gönderin.
+  Bu adım alan adı sahipliği gerektirdiği için koddan yapılamaz.
+- Analytics kurulu değil; ziyaretçi sayısı şu an ölçülmüyor.

@@ -5,6 +5,7 @@ import { MapPinIcon, PhoneIcon, EnvelopeIcon, ClockIcon } from '@heroicons/react
 import emailjs from '@emailjs/browser'
 import { SITE, OFFICES, mapEmbedUrl } from '../config/site'
 import { useSeo } from '../hooks/useSeo'
+import { PAGE_SEO } from '../config/seo'
 
 interface FormData {
   name: string
@@ -87,11 +88,7 @@ const Contact: React.FC = () => {
   /** Gonderim basarisizsa ziyaretciye sunulan yedek e-posta baglantisi. */
   const [fallbackHref, setFallbackHref] = useState<string | null>(null)
 
-  useSeo({
-    title: 'İletişim',
-    description: `${SITE.shortName} ile iletişime geçin. ${OFFICES.map((o) => `${o.district}/${o.city}`).join(' ve ')}. Telefon: ${SITE.phone}`,
-    path: '/iletisim',
-  })
+  useSeo(PAGE_SEO.contact)
 
   // EmailJS artık npm paketinden geliyor. Daha önce hem CDN <script> etiketi
   // hem npm paketi yükleniyordu ve kod `window.emailjs` kullanıyordu; CDN

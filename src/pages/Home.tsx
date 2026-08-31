@@ -9,6 +9,7 @@ import CountUp from '../components/CountUp'
 import ProofStrip from '../components/ProofStrip'
 import { STATS, SITE, FOUNDED_YEAR } from '../config/site'
 import { useSeo } from '../hooks/useSeo'
+import { PAGE_SEO } from '../config/seo'
 
 const services = [
   {
@@ -59,10 +60,7 @@ const Home: React.FC = () => {
   const [slide, setSlide] = useState(0)
   const reduce = useReducedMotion()
 
-  useSeo({
-    title: 'Gemi, Konteyner ve Araç Üstü Lashing',
-    path: '/',
-  })
+  useSeo(PAGE_SEO.home)
 
   useEffect(() => {
     if (reduce) return

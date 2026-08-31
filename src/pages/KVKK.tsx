@@ -1,13 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useSeo } from '../hooks/useSeo';
+import { PAGE_SEO } from '../config/seo';
 
 const KVKK: React.FC = () => {
-  useSeo({
-    title: 'KVKK Aydınlatma Metni',
-    description: 'Çelik Lashing & Port Services kişisel verilerin korunması ve işlenmesi politikası.',
-    path: '/kvkk',
-  });
+  useSeo(PAGE_SEO.kvkk);
 
   return (
     <div className="min-h-screen bg-steel-50">

@@ -4,6 +4,7 @@ import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { storage, db } from '../config/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeo } from '../hooks/useSeo';
+import { PAGE_SEO } from '../config/seo';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { FiMaximize2, FiX } from 'react-icons/fi';
@@ -23,11 +24,7 @@ interface GalleryImage {
 }
 
 const Gallery: React.FC = () => {
-  useSeo({
-    title: 'Galeri',
-    description: 'Çelik Lashing saha operasyonlarından fotoğraflar: gemi, konteyner ve araç üstü lashing uygulamaları.',
-    path: '/galeri',
-  });
+  useSeo(PAGE_SEO.gallery);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

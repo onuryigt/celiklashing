@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSeo } from '../hooks/useSeo';
+import { SERVICE_SEO } from '../config/seo';
 
 interface ServiceDetailType {
   id: string;
@@ -135,11 +136,13 @@ const ServiceDetail: React.FC = () => {
   const navigate = useNavigate();
   const service = serviceId ? serviceDetails[serviceId] : null;
 
-  useSeo({
-    title: service?.title ?? 'Hizmet bulunamadı',
-    description: service?.description,
-    path: `/hizmetler/${serviceId ?? ''}`,
-  });
+  const seo = serviceId ? SERVICE_SEO[serviceId] : undefined;
+  useSeo(
+    seo ?? {
+      title: 'Hizmet bulunamadı',
+      path: `/hizmetler/${serviceId ?? ''}`,
+    },
+  );
 
   // Kaydırmanın başa alınması artık PageTransition'da merkezi olarak yapılıyor.
 

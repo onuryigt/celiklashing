@@ -5,6 +5,7 @@ import { FaShip, FaTruck, FaWarehouse, FaShieldAlt, FaBox, FaUmbrella } from 're
 import ServiceCard from '../components/ServiceCard'
 import SecuringCompare from '../components/SecuringCompare'
 import { useSeo } from '../hooks/useSeo'
+import { PAGE_SEO } from '../config/seo'
 
 const services = [
   {
@@ -52,12 +53,7 @@ const services = [
 ]
 
 const Services: React.FC = () => {
-  useSeo({
-    title: 'Hizmetlerimiz',
-    description:
-      'Gemi ve proje lashing, araç üstü lashing, konteyner lashing, VCI korozyon koruma, sandıklama ve brandalama hizmetleri.',
-    path: '/hizmetler',
-  })
+  useSeo(PAGE_SEO.services)
 
   return (
     <div>

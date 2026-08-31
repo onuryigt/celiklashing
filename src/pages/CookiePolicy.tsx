@@ -1,13 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useSeo } from '../hooks/useSeo';
+import { PAGE_SEO } from '../config/seo';
 
 const CookiePolicy: React.FC = () => {
-  useSeo({
-    title: 'Çerez Politikası',
-    description: 'Çelik Lashing & Port Services web sitesinde kullanılan çerezler hakkında bilgilendirme.',
-    path: '/cerez-politikasi',
-  });
+  useSeo(PAGE_SEO.cookies);
 
   return (
     <div className="min-h-screen bg-steel-50">

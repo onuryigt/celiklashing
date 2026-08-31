@@ -5,6 +5,7 @@ import { ShieldCheckIcon, ClockIcon, TruckIcon, UserGroupIcon } from '@heroicons
 import CountUp from '../components/CountUp'
 import { SITE, FOUNDED_YEAR, yearsInBusiness } from '../config/site'
 import { useSeo } from '../hooks/useSeo'
+import { PAGE_SEO } from '../config/seo'
 
 const features = [
   {
@@ -41,11 +42,7 @@ const milestones = [
 const About: React.FC = () => {
   const years = yearsInBusiness()
 
-  useSeo({
-    title: 'Hakkımızda',
-    description: `${FOUNDED_YEAR} yılında İstanbul'da kurulan ${SITE.name}, ${years} yıldır denizcilik ve yük sabitleme sektöründe hizmet veriyor.`,
-    path: '/hakkimizda',
-  })
+  useSeo(PAGE_SEO.about)
 
   return (
     <div>
