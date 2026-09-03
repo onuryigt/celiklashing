@@ -19,116 +19,137 @@ const serviceDetails: Record<string, ServiceDetailType> = {
     id: 'gemi-proje-lashing',
     title: 'Gemi & Proje Lashing',
     description: 'Deniz taşımacılığında yüklerin güvenli şekilde bağlanması',
-    longDescription: 'Gemi ve proje yüklerinin uluslararası standartlara uygun olarak bağlanması ve emniyete alınması hizmetleri. Profesyonel ekibimiz ve modern ekipmanlarımızla her türlü yükün güvenli taşınmasını sağlıyoruz.',
+    longDescription:
+      'Proje kargo, ağır ve gabari dışı yüklerin gemi güvertesinde ya da ambarda sabitlenmesi. ' +
+      'Yükün ağırlık merkezi, seferin süresi ve beklenen deniz koşulları birlikte değerlendirilir; ' +
+      'bağlama noktaları, zincir ve kayış sayısı ile gerginlik değerleri buna göre hesaplanır. ' +
+      'Uygulama sonrası her nokta kontrol edilir ve teslim öncesi kayıt altına alınır.',
     image: '/services/gemi-proje-lashing.webp',
     features: [
-      'Uluslararası standartlara uygun bağlama sistemleri',
-      'Deneyimli uzman ekip',
-      'Modern ekipman ve malzemeler',
-      'Proje bazlı özel çözümler'
+      'Zincir, gergi (turnbuckle), kayış ve D-ring noktalarıyla sabitleme',
+      'Ağırlık merkezi ve deniz koşullarına göre bağlama planı',
+      'Takoz, kızak ve kaymaz mat ile yük altı destek',
+      'Proje bazlı ekip ve ekipman planlaması',
     ],
     benefits: [
-      'Maksimum yük güvenliği',
-      'Hasarsız teslimat',
-      'Zaman ve maliyet tasarrufu',
-      'Risk minimizasyonu'
-    ]
+      'Yük seyir boyunca yerinde kalır',
+      'Tahliye sırasında güvenli ve hızlı çözme',
+      'Teslim öncesi kontrol kaydı',
+      'Liman ve gemi programına uyumlu operasyon',
+    ],
   },
   'arac-ustu-lashing': {
     id: 'arac-ustu-lashing',
     title: 'Araç Üstü Lashing',
     description: 'Karayolu taşımacılığında yüklerin güvenli şekilde bağlanması',
-    longDescription: 'Karayolu taşımacılığında araç üstü yüklerin güvenli ve standartlara uygun şekilde bağlanması hizmetleri. Özel ekipmanlarımız ve uzman kadromuzla güvenli taşıma garantisi sunuyoruz.',
+    longDescription:
+      'Tır, römork ve lowbed üzerindeki yüklerin karayolu koşullarına göre sabitlenmesi. ' +
+      'Fren, viraj ve kalkış ivmeleri yükün ağırlığı ve sürtünme yüzeyiyle birlikte hesaba katılır; ' +
+      'kayış sayısı, bağlama açısı ve ön gerilim (STF) buna göre belirlenir. ' +
+      'Köşe koruyucular yükü ve kayışı korur; kaymaz mat sürtünmeyi artırarak gereken kayış sayısını düşürür.',
     image: '/services/arac-ustu-lashing.webp',
     features: [
-      'Araç tipine özel bağlama sistemleri',
-      'Sertifikalı ekipmanlar',
-      'Hızlı ve güvenli uygulama',
-      '7/24 hizmet'
+      'Cırcırlı (ratchet) kayış ve zincir ile üstten bastırma / doğrudan bağlama',
+      'Kaymaz mat ve köşe koruyucu kullanımı',
+      'Yüke ve araca göre hesaplanmış kayış sayısı ve açısı',
+      'Yükleme sahasında ya da limanda, 7/24 uygulama',
     ],
     benefits: [
-      'Güvenli taşıma',
-      'Yasal uyumluluk',
-      'Profesyonel hizmet',
-      'Hızlı çözüm'
-    ]
+      'Yol boyunca kayma ve devrilme riski azalır',
+      'Yol denetimlerinde yük emniyeti eksikliği yaşanmaz',
+      'Yük ve araç hasarı önlenir',
+      'Kısa uygulama süresi, aracın bekleme süresi azalır',
+    ],
   },
   'konteyner-lashing': {
     id: 'konteyner-lashing',
     title: 'Konteyner Lashing',
     description: 'Konteynerlerin güvenli şekilde bağlanması ve sabitlenmesi',
-    longDescription: 'Konteyner taşımacılığında güvenli ve standartlara uygun bağlama hizmetleri. Uzman ekibimiz ve özel ekipmanlarımızla konteynerlerinizin güvenli taşınmasını sağlıyoruz.',
+    longDescription:
+      'Konteyner içine yüklenen makine, palet ve düzensiz parçaların konteynerin bağlama halkalarına sabitlenmesi. ' +
+      'Amaç, yükün konteyner içinde deniz ve kara yolculuğu boyunca hareket etmemesi. ' +
+      'Kayış, zincir, ahşap takoz ve şişme hava yastığı (dunnage bag) birlikte kullanılır; ' +
+      'boşluklar doldurulur, ağırlık dağılımı konteyner tabanına dengeli yayılır.',
     image: '/services/konteyner-lashing.webp',
     features: [
-      'Standart ve özel konteyner bağlama sistemleri',
-      'Sertifikalı ekipmanlar',
-      'Uzman ekip',
-      'Hızlı operasyon'
+      'Bağlama halkalarına kayış ve zincir ile sabitleme',
+      'Ahşap takoz, destek ve hava yastığı ile boşluk doldurma',
+      'Ağırlık dağılımı ve taban yükü kontrolü',
+      'Flat-rack ve open-top konteynerlerde özel bağlama',
     ],
     benefits: [
-      'Yük güvenliği',
-      'Operasyonel verimlilik',
-      'Maliyet optimizasyonu',
-      'Sürdürülebilir çözümler'
-    ]
+      'Yük konteyner içinde yer değiştirmez',
+      'Varışta kapı açıldığında yük düşme riski önlenir',
+      'Konteyner ve yük hasarı azalır',
+      'Yükleme raporuyla belgelenmiş operasyon',
+    ],
   },
   'vci-koruma': {
     id: 'vci-koruma',
     title: 'VCI Koruma',
     description: 'Metal yüzeylerin korozyona karşı korunması',
-    longDescription: 'Metal yüzeylerin korozyona karşı etkin korunması için profesyonel VCI koruma hizmetleri sunuyoruz. İleri teknoloji ürünlerimiz ve uzman kadromuzla ekipmanlarınızın uzun ömürlü olmasını sağlıyoruz.',
+    longDescription:
+      'VCI (Volatile Corrosion Inhibitor) buharlaşan korozyon önleyici teknolojisiyle metal parçaların paslanmaya karşı korunması. ' +
+      'VCI film, kâğıt ve emitörler kapalı ambalaj içinde koruyucu bir buhar tabakası oluşturur; ' +
+      'yağlama gerektirmez, varışta temizlik istemez. Uzun deniz yolculukları ve depolama süreleri için tercih edilir.',
     image: '/services/vci-koruma.webp',
     features: [
-      'İleri teknoloji VCI ürünleri',
-      'Uzun süreli koruma garantisi',
-      'Profesyonel uygulama',
-      'Çevre dostu çözümler'
+      'VCI film, torba, kâğıt ve emitör uygulaması',
+      'Parçanın metal türüne göre uygun VCI seçimi',
+      'Sandıklama ve konteyner yüklemesiyle birlikte uygulama',
+      'Nem alıcı (desikant) ile birlikte kullanım',
     ],
     benefits: [
-      'Ekipman ömrünü uzatma',
-      'Korozyon hasarını önleme',
-      'Maliyet tasarrufu',
-      'Sürdürülebilir koruma'
-    ]
+      'Deniz yolculuğunda tuzlu nemden korunma',
+      'Varışta yağ temizliği gerektirmez',
+      'İşlenmiş yüzeyler ve hassas parçalar korunur',
+      'Depolama süresince paslanma önlenir',
+    ],
   },
   'sandiklama': {
     id: 'sandiklama',
     title: 'Sandıklama',
     description: 'Özel ürünler için güvenli paketleme çözümleri',
-    longDescription: 'Hassas ve değerli ürünleriniz için özel tasarım sandıklama hizmetleri sunuyoruz. Yüksek kaliteli malzemeler ve profesyonel ekibimizle ürünlerinizin güvenle paketlenmesini sağlıyoruz.',
+    longDescription:
+      'Makine, ekipman ve hassas parçalar için ölçüye göre ahşap sandık ve kasa imalatı. ' +
+      'Sandık, yükün ağırlığına ve taşıma şekline göre tasarlanır; forklift girişi, kaldırma noktaları ve istifleme dayanımı baştan planlanır. ' +
+      'İhracat için ısıl işlem görmüş (ISPM 15) ahşap kullanılır; iç sabitleme, VCI koruma ve nem alıcı ile tamamlanır.',
     image: '/services/sandiklama.webp',
     features: [
-      'Özel tasarım sandıklar',
-      'Yüksek kaliteli malzeme',
-      'Profesyonel paketleme',
-      'Güvenli taşıma çözümleri'
+      'Ölçüye özel ahşap sandık, kasa ve palet imalatı',
+      'İhracata uygun ısıl işlemli (ISPM 15) ahşap',
+      'Sandık içi sabitleme ve destek',
+      'VCI ve nem alıcı ile birlikte paketleme',
     ],
     benefits: [
-      'Maksimum ürün koruması',
-      'Güvenli depolama',
-      'Hasarsız teslimat',
-      'Kolay taşıma'
-    ]
+      'Taşıma ve istiflemede darbe koruması',
+      'Gümrük ve ihracat ahşap kurallarına uyum',
+      'Forklift ve vinçle güvenli elleçleme',
+      'Uzun süreli depolamaya uygun ambalaj',
+    ],
   },
   'brandalama': {
     id: 'brandalama',
     title: 'Brandalama',
     description: 'Açık yüklerin hava koşullarından korunması',
-    longDescription: 'Açık yüklerinizin hava koşullarından etkin korunması için profesyonel brandalama hizmetleri sunuyoruz. Yüksek kaliteli brandalar ve uzman kadromuzla yüklerinizin güvenliğini sağlıyoruz.',
+    longDescription:
+      'Açık araç, vagon ve güverte yüklerinin yağmur, tuzlu su, toz ve güneşe karşı brandayla örtülmesi. ' +
+      'Branda yükün formuna göre kesilir ve gerdirilir; rüzgârda çırpmayı önleyecek şekilde bağlanır, ' +
+      'su birikmeyecek eğim verilir. Lashing uygulamasıyla birlikte tek seferde tamamlanır.',
     image: '/services/brandalama.webp',
     features: [
-      'Yüksek kaliteli brandalar',
-      'Profesyonel uygulama',
-      'Hava koşullarına dayanıklılık',
-      'Hızlı servis'
+      'Yükün ölçüsüne göre kesilmiş, gerdirilmiş branda',
+      'Rüzgâr ve su birikmesine karşı bağlama düzeni',
+      'Lashing ile birlikte uygulama',
+      'Kara, demiryolu ve gemi güvertesi yüklerinde',
     ],
     benefits: [
-      'Yük koruması',
-      'UV dayanımı',
-      'Su geçirmezlik',
-      'Uzun ömürlü kullanım'
-    ]
-  }
+      'Yağmur ve tuzlu su hasarı önlenir',
+      'Toz ve güneşten korunma',
+      'Yolda çırpma ve yırtılma riski azalır',
+      'Varışta temiz ve kuru yük',
+    ],
+  },
 };
 
 const ServiceDetail: React.FC = () => {
