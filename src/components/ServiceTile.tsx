@@ -28,7 +28,7 @@ const ServiceTile: React.FC<Props> = ({ id, title, label, image, index = 0 }) =>
   >
     <Link
       to={`/hizmetler/${id}`}
-      className="group relative block aspect-square overflow-hidden rounded-2xl border border-white/[.08] bg-night-panel text-white"
+      className="group relative block aspect-[4/3] overflow-hidden sm:aspect-square rounded-2xl border border-white/[.08] bg-night-panel text-white"
       style={
         image
           ? undefined

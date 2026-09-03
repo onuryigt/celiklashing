@@ -7,17 +7,17 @@ import OperationStrip from '../components/OperationStrip'
 import ServiceTile from '../components/ServiceTile'
 import CountUp from '../components/CountUp'
 import ProofStrip from '../components/ProofStrip'
-import { STATS, OFFICES } from '../config/site'
+import { STATS, OFFICES, SITE } from '../config/site'
 import { PAGE_SEO } from '../config/seo'
 import { useSeo } from '../hooks/useSeo'
 
-/** Ana sayfadaki altı hizmet. Fotoğrafı olmayanlar tipografik kare. */
+/** Ana sayfadaki altı hizmet. */
 const TILES = [
   { id: 'gemi-proje-lashing', label: 'Deniz', title: 'Gemi & Proje Lashing', image: '/services/gemi-proje-lashing.webp' },
   { id: 'arac-ustu-lashing', label: 'Kara', title: 'Araç Üstü Lashing', image: '/services/arac-ustu-lashing.webp' },
   { id: 'konteyner-lashing', label: 'Konteyner', title: 'Konteyner Lashing', image: '/services/konteyner-lashing.webp' },
-  { id: 'vci-koruma', label: 'Koruma', title: 'VCI Korozyon Koruma' },
-  { id: 'sandiklama', label: 'Ambalaj', title: 'Sandıklama' },
+  { id: 'vci-koruma', label: 'Koruma', title: 'VCI Korozyon Koruma', image: '/services/vci-koruma.webp' },
+  { id: 'sandiklama', label: 'Ambalaj', title: 'Sandıklama', image: '/services/sandiklama.webp' },
   { id: 'brandalama', label: 'Örtü', title: 'Brandalama', image: '/services/brandalama.webp' },
 ]
 
@@ -104,13 +104,13 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 04 · Saha — gerçek fotoğraf */}
+      {/* 04 · Saha — nerede, ne zaman, kime ulaşılır */}
       <section className="border-t border-white/[.08] bg-night py-20 md:py-32">
         <div className="container">
           <div className="relative flex min-h-[min(72vh,720px)] items-end overflow-hidden rounded-[18px] border border-white/[.08]">
             <img
               src="/hero3.webp"
-              alt="Çelik Lashing saha ekibi liman sahasında"
+              alt="Çelik Lashing ekibi, kayışlarla sabitlenmiş bir konteynerin yanında"
               loading="lazy"
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover brightness-[.8] contrast-[1.1] saturate-[.7]"
@@ -118,23 +118,60 @@ const Home: React.FC = () => {
             <div
               aria-hidden="true"
               className="absolute inset-0"
-              style={{ background: 'linear-gradient(to top, rgba(11,15,17,.95), rgba(11,15,17,.15) 50%, rgba(11,15,17,.3))' }}
+              style={{ background: 'linear-gradient(to top, rgba(11,15,17,.96), rgba(11,15,17,.2) 55%, rgba(11,15,17,.3))' }}
             />
-            <span className="absolute right-4 top-4 z-[2] rounded-full border border-white/15 bg-night/60 px-3 py-2 font-mono text-[11px] uppercase tracking-label text-secure-light backdrop-blur-md">
-              Gerçek fotoğraf · Pendik
+            <span className="absolute right-4 top-4 z-[2] rounded-full border border-white/15 bg-night/60 px-3 py-2 font-mono text-[11px] uppercase tracking-label text-white/70 backdrop-blur-md">
+              {OFFICES[0].district} · {OFFICES[0].city}
             </span>
-            <div className="relative z-[2] max-w-[720px] p-[clamp(24px,4vw,48px)]">
-              <div className="mb-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-label text-hazard-light">
-                <span className="h-px w-8 bg-hazard-light" aria-hidden="true" />
-                Saha
+
+            <div className="relative z-[2] grid w-full gap-8 p-[clamp(24px,4vw,48px)] md:grid-cols-[1.4fr_1fr] md:items-end">
+              <div className="max-w-[640px]">
+                <div className="mb-4 flex items-center gap-3 font-mono text-[11px] uppercase tracking-label text-hazard-light">
+                  <span className="h-px w-8 bg-hazard-light" aria-hidden="true" />
+                  Saha
+                </div>
+                <h2 className="font-display text-[clamp(2.2rem,5vw,4.4rem)] font-light leading-[.98] text-white">
+                  Limanda, sahada, yolda.
+                </h2>
+                <p className="mt-3.5 max-w-[52ch] text-[15.5px] text-white/65">
+                  {OFFICES[0].city} merkez ve {OFFICES[1]?.city ?? 'Ankara'} şubesinden Türkiye’nin limanlarına ve
+                  yükleme sahalarına ekip çıkarıyoruz. Gece yarısı yanaşan gemi için de, sabah yola çıkacak
+                  tır için de aynı telefon çalar.
+                </p>
               </div>
-              <h2 className="font-display text-[clamp(2.2rem,5vw,4.4rem)] font-light leading-[.98] text-white">
-                Ekran değil, iskele.
-              </h2>
-              <p className="mt-3.5 max-w-[56ch] text-[15.5px] text-white/65">
-                Üstteki illüstrasyon fikri anlatır; güveni bu fotoğraflar kurar. Gerçek ekip, gerçek
-                operasyon — sadece ışığı ve rengi liman gecesine çekildi.
-              </p>
+
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-5 md:grid-cols-1">
+                {[
+                  ['Ofis', OFFICES.map((o) => o.city).join(' · ')],
+                  ['Erişim', '7/24 saha ekibi'],
+                ].map(([k, v]) => (
+                  <div key={k}>
+                    <dt className="font-mono text-[11px] uppercase tracking-label text-white/45">{k}</dt>
+                    <dd className="mt-1 text-[15px] text-white">{v}</dd>
+                  </div>
+                ))}
+                <div>
+                  <dt className="font-mono text-[11px] uppercase tracking-label text-white/45">Telefon</dt>
+                  <dd className="mt-1 text-[15px]">
+                    <a href={`tel:${SITE.phoneHref}`} className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-hazard-light">
+                      {SITE.phone}
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-mono text-[11px] uppercase tracking-label text-white/45">WhatsApp</dt>
+                  <dd className="mt-1 text-[15px]">
+                    <a
+                      href={`https://wa.me/${SITE.whatsapp}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-hazard-light"
+                    >
+                      Mesaj yazın
+                    </a>
+                  </dd>
+                </div>
+              </dl>
             </div>
           </div>
         </div>

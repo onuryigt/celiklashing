@@ -50,7 +50,7 @@ const OperationStrip: React.FC = () => (
           </h2>
           <p className="mt-3 max-w-[62ch] text-[15.5px] text-white/65">
             Ağırlık merkezi okunur, bağlama noktaları belirlenir, hesaplanmış gerginlikte sabitlenir,
-            teslimden önce her nokta tek tek kontrol edilir. Aşağıdakiler gerçek saha fotoğrafları.
+            teslimden önce her nokta tek tek kontrol edilir.
           </p>
         </div>
       </div>
