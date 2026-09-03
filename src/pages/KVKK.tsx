@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useSeo } from '../hooks/useSeo';
 import { PAGE_SEO } from '../config/seo';
+import { SITE, HQ } from '../config/site';
 
 const KVKK: React.FC = () => {
   useSeo(PAGE_SEO.kvkk);
@@ -124,6 +125,15 @@ const KVKK: React.FC = () => {
                     <h2 className="text-2xl font-bold text-steel-900 mb-4">6. İletişim</h2>
                     <p className="text-steel-600">
                       Yukarıda belirtilen haklarınızı kullanmak için kimliğinizi tespit edici gerekli bilgiler ve kullanmak istediğiniz hakkınıza yönelik açıklamalarınızla birlikte talebinizi KVK Kanunu'nun 11. maddesinde belirtilen hangi hakkınızın kullanımına ilişkin olduğunu da belirterek şirketimize iletebilirsiniz.
+                    </p>
+                    <div className="bg-steel-50 rounded-sm p-6 mt-4 space-y-2 text-steel-700 text-sm">
+                      <p><span className="font-semibold text-steel-900">Veri sorumlusu:</span> Çelik Lashing Konteyner Denizcilik Ve Liman Hizmeti LTD. ŞTİ.</p>
+                      <p><span className="font-semibold text-steel-900">Adres:</span> {HQ.street}, {HQ.district}/{HQ.city}</p>
+                      <p><span className="font-semibold text-steel-900">E-posta:</span> <a href={`mailto:${SITE.email}`} className="text-secure underline">{SITE.email}</a></p>
+                      <p><span className="font-semibold text-steel-900">Telefon:</span> <a href={`tel:${SITE.phoneHref}`} className="text-secure underline">{SITE.phone}</a></p>
+                      <p className="text-steel-500">Başvurunuz en geç otuz gün içinde ücretsiz olarak sonuçlandırılır.</p>
+                    </div>
+                    <p className="hidden">
                     </p>
                   </div>
                 </div>

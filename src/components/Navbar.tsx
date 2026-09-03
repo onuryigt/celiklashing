@@ -11,10 +11,21 @@ const navigation = [
   { name: 'İletişim', href: '/iletisim' },
 ]
 
+/** Sinema kaydındaki sayfalar: menü koyu zemin üstünde cam şerit olur. */
+const CINE_PATHS = new Set(['/'])
+
+/**
+ * Üst menü — iki kayıt.
+ *
+ * Ana sayfada (sinema kaydı) şeffaf başlar, kaydırınca koyu cama döner.
+ * İçerik sayfalarında (ofis kaydı) beyaz zemin. Aynı bileşen, aynı yerleşim;
+ * yalnızca renk sınıfları `dark` bayrağına göre değişir.
+ */
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
+  const dark = CINE_PATHS.has(location.pathname)
 
   // Aktif bağlantının altında kayan zemin.
   const listRef = useRef<HTMLDivElement>(null)
@@ -39,7 +50,6 @@ const Navbar: React.FC = () => {
       }
       setPill({ left: active.offsetLeft, width: active.offsetWidth })
     }
-
     place()
     window.addEventListener('resize', place)
     // Fontlar yüklenince bağlantı genişlikleri değişiyor; sonrasında tekrar ölç.
@@ -47,49 +57,79 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('resize', place)
   }, [location.pathname])
 
+  const c = dark
+    ? {
+        nav: scrolled ? 'bg-night/85 border-white/[.08] shadow-[0_10px_30px_-16px_rgba(0,0,0,.8)]' : 'bg-transparent border-transparent',
+        word: 'text-white',
+        sub: 'text-white/45',
+        link: 'text-white/65 hover:text-white',
+        linkOn: 'text-white font-semibold',
+        pill: 'bg-white/10',
+        list: 'border border-white/[.13] bg-night/60 backdrop-blur-xl rounded-full p-1',
+        mail: 'border-white/25 text-white hover:bg-white hover:text-night',
+        burger: 'text-white hover:bg-white/10',
+        panel: 'border-white/[.08] bg-night/95',
+        mLink: 'text-white/70 hover:bg-white/5',
+        mLinkOn: 'border-hazard-light text-white font-semibold bg-white/10',
+        mMail: 'text-secure-light',
+      }
+    : {
+        nav: scrolled ? 'bg-white/95 border-steel-300 shadow-card' : 'bg-white/95 border-transparent',
+        word: 'text-steel-900',
+        sub: 'text-steel-500',
+        link: 'text-steel-600 hover:text-secure',
+        linkOn: 'text-steel-900 font-semibold',
+        pill: 'bg-steel-100',
+        list: '',
+        mail: 'border-secure text-secure hover:bg-secure hover:text-white',
+        burger: 'text-steel-700 hover:bg-steel-100',
+        panel: 'border-steel-200 bg-white',
+        mLink: 'text-steel-600 hover:bg-steel-50',
+        mLinkOn: 'border-hazard text-steel-900 font-semibold bg-steel-100',
+        mMail: 'text-secure',
+      }
+
   return (
     <nav
-      className={`fixed inset-x-0 top-0 z-50 bg-white/95 backdrop-blur-sm transition-[padding,box-shadow,border-color] duration-300 ease-tension border-b ${
-        scrolled ? 'border-steel-300 shadow-card' : 'border-transparent'
-      }`}
+      className={`fixed inset-x-0 top-0 z-50 border-b backdrop-blur-sm transition-[background-color,box-shadow,border-color] duration-300 ease-tension ${c.nav}`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
           className={`flex items-center justify-between gap-4 transition-[height] duration-300 ease-tension ${
             scrolled ? 'h-16 md:h-20' : 'h-20 md:h-24'
           }`}
         >
-          {/* Logo — daha önce translate-x-[207px] gibi elle verilmiş
-              kaydırmalarla yerine oturtulmuştu; artık normal akışta. */}
-          <Link to="/" className="flex items-center gap-3 min-w-0 group">
+          {/* Logo — kırpılmış işaret; eski dosyadaki boş kenarlar ve
+              translate-x hack'leri artık yok. */}
+          <Link to="/" className="flex min-w-0 items-center gap-3">
             <img
-              src="/logo-symbol.png"
+              src="/logo-mark.png"
               alt=""
               aria-hidden="true"
+              width={236}
+              height={257}
               className={`w-auto object-contain transition-[height] duration-300 ease-tension ${
-                scrolled ? 'h-9 md:h-11' : 'h-11 md:h-14'
-              }`}
+                scrolled ? 'h-9 md:h-10' : 'h-10 md:h-12'
+              } ${dark ? 'drop-shadow-[0_1px_6px_rgba(0,0,0,.5)]' : ''}`}
             />
-            <span className="flex flex-col leading-none min-w-0">
+            <span className="flex min-w-0 flex-col leading-none">
               <span
-                className={`font-display tracking-[0.2em] text-steel-900 transition-[font-size] duration-300 ease-tension ${
+                className={`font-display tracking-[0.2em] transition-[font-size] duration-300 ease-tension ${c.word} ${
                   scrolled ? 'text-xl md:text-2xl' : 'text-2xl md:text-3xl'
                 }`}
               >
                 ÇELİK
               </span>
-              <span className="label text-steel-500 mt-0.5 truncate">
-                Lashing &amp; Port Services
-              </span>
+              <span className={`label mt-0.5 truncate ${c.sub}`}>Lashing &amp; Port Services</span>
             </span>
           </Link>
 
           {/* Masaüstü menüsü */}
-          <div ref={listRef} className="hidden md:flex items-center relative">
+          <div ref={listRef} className={`relative hidden items-center md:flex ${c.list}`}>
             {pill && (
               <motion.span
                 aria-hidden="true"
-                className="absolute inset-y-0 rounded-sm bg-steel-100"
+                className={`absolute inset-y-0 rounded-full ${c.pill}`}
                 initial={false}
                 animate={{ x: pill.left, width: pill.width }}
                 transition={{ type: 'spring', stiffness: 380, damping: 32 }}
@@ -102,11 +142,7 @@ const Navbar: React.FC = () => {
                 to={item.href}
                 end={item.href === '/'}
                 className={({ isActive }) =>
-                  `relative z-10 px-3.5 py-2 text-sm rounded-sm transition-colors ${
-                    isActive
-                      ? 'text-steel-900 font-semibold'
-                      : 'text-steel-600 hover:text-secure'
-                  }`
+                  `relative z-10 rounded-full px-3.5 py-2 text-sm transition-colors ${isActive ? c.linkOn : c.link}`
                 }
               >
                 {item.name}
@@ -119,7 +155,7 @@ const Navbar: React.FC = () => {
               href={SITE.corporateMail}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden lg:inline-flex btn btn-outline"
+              className={`btn hidden border bg-transparent lg:inline-flex ${c.mail}`}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path
@@ -132,17 +168,16 @@ const Navbar: React.FC = () => {
               Kurumsal E-posta
             </a>
 
-            {/* Mobil menü düğmesi — daha önce erişilebilirlik etiketi yoktu. */}
             <motion.button
               type="button"
               onClick={() => setIsOpen((v) => !v)}
               aria-label={isOpen ? 'Menüyü kapat' : 'Menüyü aç'}
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
-              className="md:hidden p-2.5 rounded-sm text-steel-700 hover:bg-steel-100 transition-colors"
+              className={`rounded-sm p-2.5 transition-colors md:hidden ${c.burger}`}
               whileTap={{ scale: 0.94 }}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -163,19 +198,17 @@ const Navbar: React.FC = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.22, ease: [0.2, 0.85, 0.3, 1] }}
-              className="md:hidden overflow-hidden"
+              className="overflow-hidden md:hidden"
             >
-              <div className="py-2 border-t border-steel-200 flex flex-col">
+              <div className={`flex flex-col border-t py-2 ${c.panel}`}>
                 {navigation.map((item) => (
                   <NavLink
                     key={item.name}
                     to={item.href}
                     end={item.href === '/'}
                     className={({ isActive }) =>
-                      `px-3 py-3 text-sm rounded-sm border-l-2 transition-colors ${
-                        isActive
-                          ? 'border-hazard text-steel-900 font-semibold bg-steel-100'
-                          : 'border-transparent text-steel-600 hover:bg-steel-50'
+                      `rounded-sm border-l-2 px-3 py-3 text-sm transition-colors ${
+                        isActive ? c.mLinkOn : `border-transparent ${c.mLink}`
                       }`
                     }
                   >
@@ -186,7 +219,7 @@ const Navbar: React.FC = () => {
                   href={SITE.corporateMail}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-3 text-sm text-secure border-l-2 border-transparent"
+                  className={`border-l-2 border-transparent px-3 py-3 text-sm ${c.mMail}`}
                 >
                   Kurumsal E-posta →
                 </a>

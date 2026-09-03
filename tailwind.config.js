@@ -20,6 +20,15 @@ export default {
           DEFAULT: "#146A64",
           ink: "#0E4F4A",
           soft: "#DBEBE9",
+          /* Koyu zeminde patina */
+          light: "#4FB6AE",
+        },
+        /* Sinema kaydı: ana sayfanın karanlık liman zemini. Saf siyah değil,
+           çelik-mavi eğimli. */
+        night: {
+          DEFAULT: "#0B0F11",
+          panel: "#121719",
+          raised: "#1A2124",
         },
         /* Nötrler saf gri değil; palete doğru hafif çelik/yeşil eğimli. */
         steel: {

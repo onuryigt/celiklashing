@@ -35,7 +35,7 @@ const features = [
 const milestones = [
   ['2000', 'İstanbul’da şirketimizin kuruluşu ve ilk lashing operasyonlarımız'],
   ['2010', 'Türkiye’nin önde gelen limanlarında hizmet ağımızın genişlemesi'],
-  ['2018', 'ÇELİK LASHING PORT & SERVICES markasıyla yeniden yapılanma ve modern ekipman yatırımları'],
+  ['2018', 'ÇELİK LASHING & PORT SERVICES markasıyla yeniden yapılanma ve modern ekipman yatırımları'],
   ['2023', 'Dijital dönüşüm ve sürdürülebilirlik odaklı yeni dönem başlangıcı'],
 ]
 

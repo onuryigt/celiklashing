@@ -46,7 +46,7 @@ const MainLayout: React.FC = () => (
         <FaWhatsapp className="relative w-7 h-7" aria-hidden="true" />
       </span>
       <span
-        className="pointer-events-none absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap
+        className="pointer-events-none absolute right-full mr-3 top-1/2 hidden -translate-y-1/2 whitespace-nowrap md:block
                    rounded-sm bg-steel-900 px-2.5 py-1.5 text-xs text-white opacity-0
                    transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
       >
