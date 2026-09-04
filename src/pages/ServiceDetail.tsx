@@ -189,17 +189,17 @@ const ServiceDetail: React.FC = () => {
       <section className="relative bg-steel-900 text-white pt-36 pb-20 overflow-hidden">
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
+          animate={{ opacity: 0.45 }}
           transition={{ duration: 1 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${service.image})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-steel-900/85 to-steel-900/45" />
+        <div className="absolute inset-0 bg-gradient-to-b from-steel-900/70 via-steel-900/60 to-steel-900/90" />
         <div className="relative container mx-auto px-4 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-6"
+            className="text-4xl md:text-5xl font-bold mb-6 text-white"
           >
             {service.title}
           </motion.h1>
